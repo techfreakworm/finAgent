@@ -70,8 +70,8 @@ class EquityConfig:
     ])
     max_position_pct: float = 0.20  # 20% of capital per stock
     rsi_entry: float = 30.0
-    rsi_exit: float = 50.0
-    stop_loss_pct: float = -0.05
+    rsi_exit: float = 55.0
+    stop_loss_pct: float = -0.10
     max_hold_days: int = 20
     momentum_lookback: int = 12  # months
     momentum_skip: int = 1  # skip last N months
