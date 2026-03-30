@@ -13,8 +13,6 @@ from typing import Callable, Optional
 import numpy as np
 import pandas as pd
 import ta
-import yfinance as yf
-
 from config import config
 from data.dhan_client import DhanClient
 from data.equity_data import EquityData
@@ -240,34 +238,32 @@ class ReplayDataProvider:
             except Exception:
                 pass
 
-    def _yf_period_for_range(self) -> tuple[str, str]:
-        """Return (start, end) strings for yfinance ``download``."""
-        return self.from_date, self.to_date
-
-    def _yf_interval_str(self) -> str:
-        """Map our interval notation to yfinance interval string."""
-        mapping = {"1": "1m", "5": "5m", "15": "15m", "60": "60m", "D": "1d"}
-        return mapping.get(self.interval, "1d")
-
-    def _flatten_yf(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Flatten yfinance MultiIndex columns if present."""
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = df.columns.get_level_values(0)
-        return df
+    def _dhan_to_df(self, data: dict) -> pd.DataFrame:
+        """Convert Dhan API response dict to DataFrame."""
+        if not data or "close" not in data or not data["close"]:
+            return pd.DataFrame()
+        df = pd.DataFrame({
+            "Open": data.get("open", []),
+            "High": data.get("high", []),
+            "Low": data.get("low", []),
+            "Close": data["close"],
+            "Volume": data.get("volume", []),
+        })
+        if "timestamp" in data and data["timestamp"]:
+            df.index = pd.to_datetime(data["timestamp"], unit="s")
+            if df.index.tz is not None:
+                df.index = df.index.tz_localize(None)
+        return df.sort_index()
 
     def _fetch_nifty_index(self) -> None:
-        """Fetch NIFTY 50 index via yfinance."""
-        start, end = self._yf_period_for_range()
-        yf_interval = self._yf_interval_str()
-
+        """Fetch NIFTY 50 index via Dhan."""
         try:
-            df = yf.download(
-                "^NSEI", start=start, end=end,
-                interval=yf_interval, progress=False,
+            data = self._dhan.get_historical_daily(
+                13, "IDX_I", "INDEX", self.from_date, self.to_date,
             )
-            df = self._flatten_yf(df)
+            df = self._dhan_to_df(data)
             if df.empty:
-                logger.warning("NIFTY index data is empty from yfinance")
+                logger.warning("NIFTY index data is empty from Dhan")
             else:
                 logger.info("Fetched NIFTY index: %d rows", len(df))
             self.data["nifty"] = df
@@ -276,18 +272,15 @@ class ReplayDataProvider:
             self.data["nifty"] = pd.DataFrame()
 
     def _fetch_india_vix(self) -> None:
-        """Fetch India VIX via yfinance."""
-        start, end = self._yf_period_for_range()
-        yf_interval = self._yf_interval_str()
-
+        """Fetch India VIX via Dhan."""
         try:
-            df = yf.download(
-                "^INDIAVIX", start=start, end=end,
-                interval=yf_interval, progress=False,
+            data = self._dhan.get_historical_daily(
+                config.equity.india_vix_security_id, "IDX_I", "INDEX",
+                self.from_date, self.to_date,
             )
-            df = self._flatten_yf(df)
+            df = self._dhan_to_df(data)
             if df.empty:
-                logger.warning("India VIX data is empty from yfinance")
+                logger.warning("India VIX data is empty from Dhan")
             else:
                 logger.info("Fetched India VIX: %d rows", len(df))
             self.data["vix"] = df
@@ -298,28 +291,27 @@ class ReplayDataProvider:
     def _fetch_equity_universe(
         self, on_progress: Optional[Callable] = None,
     ) -> None:
-        """Fetch top 20 stocks from the configured equity universe."""
-        start, end = self._yf_period_for_range()
-        yf_interval = self._yf_interval_str()
-        universe = config.equity.universe[:20]
+        """Fetch all NIFTY 50 stocks via Dhan API."""
+        import time as _time
+        universe = config.equity.universe_map
         total_stocks = len(universe)
 
-        for i, sym in enumerate(universe):
+        for i, (sym, sec_id) in enumerate(universe.items()):
             try:
-                df = yf.download(
-                    sym, start=start, end=end,
-                    interval=yf_interval, progress=False,
+                data = self._dhan.get_historical_daily(
+                    sec_id, "NSE_EQ", "EQUITY", self.from_date, self.to_date,
                 )
-                df = self._flatten_yf(df)
-                if not df.empty:
+                df = self._dhan_to_df(data)
+                if not df.empty and len(df) > 20:
                     self.data[f"stock_{sym}"] = df
-                    logger.info("Fetched %s: %d rows", sym, len(df))
+                    logger.debug("Fetched %s: %d rows", sym, len(df))
                 else:
-                    logger.warning("Empty data for %s", sym)
+                    logger.warning("Empty/short data for %s (ID=%d)", sym, sec_id)
             except Exception as exc:
                 logger.error("Failed to fetch %s: %s", sym, exc)
 
-            # Progress: 25-55% allocated to equity fetch
+            _time.sleep(0.3)  # rate limit
+
             pct = 25 + int(30 * (i + 1) / total_stocks)
             self._update_progress(
                 pct, f"Fetched {i + 1}/{total_stocks} stocks ({sym})", on_progress,

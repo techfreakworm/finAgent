@@ -292,8 +292,7 @@ class ReplayEngine:
 
         elif name == "equity_mean_reversion":
             # Only generate equity signals at the daily close — NOT every
-            # intraday candle.  Check if this is the last candle of the day
-            # (next candle is a different date, or this is the last candle).
+            # intraday candle.
             total = self.data.get_total()
             current_idx = self.current_index
             is_last_candle_of_day = True
@@ -305,22 +304,46 @@ class ReplayEngine:
                     is_last_candle_of_day = False
 
             if not is_last_candle_of_day:
-                return []  # Skip — not end of day yet
+                return []
 
-            # Build per-stock DataFrame slices from the view
-            stock_prices: dict = {}
-            for sym in config.equity.universe:
-                key = f"stock_{sym}"
-                df = view.get(key)
-                if df is not None and len(df) >= 20:
-                    stock_prices[sym] = df
+            # Use PRE-COMPUTED daily RSI from candle data directly.
+            # Do NOT call strategy.generate_signals() — it recomputes RSI
+            # on hourly data which gives wrong 14-hour RSI instead of 14-day.
+            stocks = candle.get("stocks", {})
+            signals = []
 
-            data_dict = {
-                "stock_prices": stock_prices,
-                "capital": self.capital,
-                "current_date": ts_dt,
-            }
-            return strategy.generate_signals(data_dict)
+            for sym, sdata in stocks.items():
+                rsi = sdata.get("rsi", 50)
+                price = sdata.get("close", 0)
+
+                if rsi >= config.equity.rsi_entry or price <= 0:
+                    continue
+
+                # Check not already holding
+                if any(p.symbol == sym for p in open_positions):
+                    continue
+
+                pos_value = self.capital * config.equity.max_position_pct
+                qty = int(pos_value / price)
+                if qty <= 0:
+                    continue
+
+                signals.append(Signal(
+                    strategy="equity_mean_reversion",
+                    symbol=sym,
+                    direction="BUY",
+                    entry_price=price,
+                    stop_loss=price * (1 + config.equity.stop_loss_pct),
+                    target=0,
+                    lot_size=qty,
+                    margin_required=pos_value,
+                    confidence=min(0.8, (config.equity.rsi_entry - rsi) / 30),
+                    reasoning=f"{sym} RSI={rsi:.1f} (daily, pre-computed)",
+                    timestamp=ts_dt,
+                    metadata={"rsi": rsi},
+                ))
+
+            return signals
 
         return []
 
@@ -470,7 +493,21 @@ class ReplayEngine:
         self, candle: dict, ts_dt: datetime, floor_breached: bool,
     ) -> None:
         """Check every open position for exit conditions."""
+        # Determine if this is the last candle of the day (for equity exits)
+        total = self.data.get_total()
+        is_eod = True
+        if self.current_index + 1 < total:
+            next_c = self.data.get_candle(self.current_index + 1)
+            next_ts = self._to_datetime(next_c.get("timestamp"))
+            if next_ts and ts_dt and next_ts.date() == ts_dt.date():
+                is_eod = False
+
         for pos in list(self.position_manager.get_open_positions()):
+            # Equity positions: only check exits at daily close
+            # (matches backtest methodology — avoids intraday noise exits)
+            if pos.strategy == "equity_mean_reversion" and not is_eod:
+                continue
+
             should_exit, reason = self._check_position_exit(
                 pos, candle, ts_dt, floor_breached,
             )

@@ -46,7 +46,9 @@ def research_node(state: TradingState) -> dict:
 
     # India VIX
     try:
-        vix_df = equity.get_india_vix(period="5d")
+        from datetime import timedelta
+        vix_from = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+        vix_df = equity.get_india_vix(from_date=vix_from)
         if vix_df is not None and len(vix_df) > 0:
             vix = float(vix_df["Close"].iloc[-1])
             market_data["vix"] = vix
@@ -59,7 +61,9 @@ def research_node(state: TradingState) -> dict:
 
     # Equity data for RSI scanning
     try:
-        stock_data = equity.get_nifty_universe(period="6mo")
+        from datetime import timedelta
+        eq_from = (datetime.now() - timedelta(days=200)).strftime("%Y-%m-%d")
+        stock_data = equity.get_nifty_universe(from_date=eq_from)
         market_data["stock_prices"] = stock_data
         logger.info("Loaded %d stocks for equity scan", len(stock_data))
     except Exception as e:
