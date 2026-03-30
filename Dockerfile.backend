@@ -1,0 +1,30 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# System deps for numpy/scipy/xgboost
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc g++ && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code (exclude frontend, venv, research)
+COPY config.py engine.py scheduler.py main.py ./
+COPY data/ data/
+COPY risk/ risk/
+COPY strategies/ strategies/
+COPY agents/ agents/
+COPY backend/ backend/
+COPY notifications/ notifications/
+COPY replay/ replay/
+
+# Create empty .env if not mounted
+RUN touch .env
+
+ENV FINAGENT_DB_PATH=docker-data/finagent.db
+
+EXPOSE 8000
+
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

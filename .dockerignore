@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+research_scratchpad/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+*.db
+*.log
+.env
+dhan_api_spec.json

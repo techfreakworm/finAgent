@@ -1,0 +1,46 @@
+# Environment & secrets
+.env
+settings.json
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Database
+*.db
+docker-data/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+finagent.log
+
+# Dhan API spec (large)
+dhan_api_spec.json
+
+# Research cache files (large, regenerable)
+research_scratchpad/*_cache.json
+research_scratchpad/*_results.json
+research_scratchpad/real_trades.csv
+research_scratchpad/option_chain_snapshot.json
+
+# Playwright screenshots
+*.png
+.playwright-mcp/
