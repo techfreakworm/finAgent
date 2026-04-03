@@ -2,7 +2,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import StatCard from '../components/StatCard';
 import ActionButton from '../components/ActionButton';
-import { Wallet, Shield, AlertTriangle, BarChart3, Radar, Bot } from 'lucide-react';
+import { Wallet, Shield, AlertTriangle, BarChart3, Radar, Bot, RotateCcw } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 function formatINR(n: number) {
@@ -37,6 +38,17 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const refreshAll = () => queryClient.invalidateQueries();
 
+  const handleReset = async () => {
+    if (!confirm('Clear all trades, signals, positions and reset capital? This cannot be undone.')) return;
+    try {
+      await api.resetAccount(p?.account_id || 'paper');
+      toast.success('Account reset');
+      queryClient.invalidateQueries();
+    } catch {
+      toast.error('Reset failed');
+    }
+  };
+
   if (pLoading) return <div className="text-gray-500">Loading...</div>;
 
   const p = portfolio!;
@@ -61,6 +73,13 @@ export default function Dashboard() {
         <div className="flex flex-wrap items-center gap-2">
           <ActionButton label="Scan" icon={<Radar size={14} />} action={api.triggerScan} onComplete={refreshAll as any} />
           <ActionButton label="AI Workflow" icon={<Bot size={14} />} action={api.triggerWorkflow} onComplete={refreshAll as any} />
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20"
+          >
+            <RotateCcw size={14} />
+            Reset
+          </button>
           <div className={`px-2 py-1 rounded-full text-xs font-medium ${
             isProfit ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
           }`}>

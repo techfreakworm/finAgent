@@ -1,11 +1,20 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import toast from 'react-hot-toast';
 
 function formatINR(n: number) {
   return `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
 export default function Trades() {
+  const queryClient = useQueryClient();
+
+  const { data: positions } = useQuery({
+    queryKey: ['positions'],
+    queryFn: api.getPositions,
+    refetchInterval: 10000,
+  });
+
   const { data: trades, isLoading } = useQuery({
     queryKey: ['trades'],
     queryFn: () => api.getTrades(100),
@@ -16,11 +25,69 @@ export default function Trades() {
     queryFn: api.getTradesSummary,
   });
 
+  const handleClose = async (id: string, symbol: string) => {
+    try {
+      await api.closePosition(id);
+      toast.success(`Closed ${symbol}`);
+      queryClient.invalidateQueries();
+    } catch {
+      toast.error('Failed to close position');
+    }
+  };
+
   if (isLoading) return <div className="text-gray-500">Loading trades...</div>;
 
   return (
     <div>
       <h2 className="text-xl font-semibold text-white mb-4">Trades</h2>
+
+      {/* Open Positions */}
+      {positions && positions.length > 0 && (
+        <div className="bg-[#1e2235] rounded-xl border border-[#2a2d3e] overflow-x-auto mb-6">
+          <div className="p-3 border-b border-[#2a2d3e]">
+            <h3 className="text-sm text-amber-400 font-medium">Open Positions ({positions.length})</h3>
+          </div>
+          <table className="w-full text-sm min-w-[600px]">
+            <thead>
+              <tr className="border-b border-[#2a2d3e] text-gray-500 text-xs uppercase">
+                <th className="text-left p-3">Symbol</th>
+                <th className="text-left p-3">Strategy</th>
+                <th className="text-left p-3">Dir</th>
+                <th className="text-right p-3">Entry</th>
+                <th className="text-right p-3">Qty</th>
+                <th className="text-right p-3">Margin</th>
+                <th className="text-left p-3">Date</th>
+                <th className="text-right p-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {positions.map(p => (
+                <tr key={p.id} className="border-b border-[#2a2d3e]/50 hover:bg-[#252840]">
+                  <td className="p-3 text-white font-medium">{p.symbol}</td>
+                  <td className="p-3 text-gray-400">{p.strategy.replace(/_/g, ' ')}</td>
+                  <td className="p-3">
+                    <span className={`px-1.5 py-0.5 rounded text-xs ${
+                      p.direction === 'LONG' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'
+                    }`}>{p.direction}</span>
+                  </td>
+                  <td className="p-3 text-right text-gray-300">{formatINR(p.entry_price)}</td>
+                  <td className="p-3 text-right text-gray-400">{p.quantity}</td>
+                  <td className="p-3 text-right text-gray-300">{formatINR(p.margin_required)}</td>
+                  <td className="p-3 text-gray-500 text-xs">{p.entry_date?.slice(0, 16)}</td>
+                  <td className="p-3 text-right">
+                    <button
+                      onClick={() => handleClose(p.id, p.symbol)}
+                      className="text-xs px-2 py-1 rounded bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors"
+                    >
+                      Close
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Strategy summary cards */}
       {summary && Object.keys(summary).length > 0 && (
@@ -63,8 +130,11 @@ export default function Trades() {
         </div>
       )}
 
-      {/* Trade log table */}
+      {/* Closed trade log table */}
       <div className="bg-[#1e2235] rounded-xl border border-[#2a2d3e] overflow-x-auto">
+        <div className="p-3 border-b border-[#2a2d3e]">
+          <h3 className="text-sm text-gray-400 font-medium">Closed Trades</h3>
+        </div>
         <table className="w-full text-sm min-w-[700px]">
           <thead>
             <tr className="border-b border-[#2a2d3e] text-gray-500 text-xs uppercase">
@@ -87,7 +157,7 @@ export default function Trades() {
                 <td className="p-3 text-gray-400">{t.strategy?.replace(/_/g, ' ')}</td>
                 <td className="p-3">
                   <span className={`px-1.5 py-0.5 rounded text-xs ${
-                    t.direction === 'BUY' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'
+                    t.direction === 'BUY' || t.direction === 'LONG' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'
                   }`}>{t.direction}</span>
                 </td>
                 <td className="p-3 text-right text-gray-300">{formatINR(t.entry_price)}</td>

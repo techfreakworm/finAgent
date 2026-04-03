@@ -87,6 +87,19 @@ export interface Trade {
   exit_reason: string;
 }
 
+export interface OpenPosition {
+  id: string;
+  symbol: string;
+  strategy: string;
+  direction: string;
+  entry_date: string;
+  entry_price: number;
+  quantity: number;
+  margin_required: number;
+  stop_loss: number;
+  status: string;
+}
+
 export interface RiskData {
   capital: number;
   hard_floor: number;
@@ -163,6 +176,10 @@ export const api = {
   getTrades: (limit = 100) => fetchJSON<Trade[]>(`/trades?limit=${limit}`),
   getTradesSummary: () => fetchJSON<Record<string, StrategySummary>>('/trades/summary'),
 
+  // Positions
+  getPositions: () => fetchJSON<OpenPosition[]>('/positions'),
+  closePosition: (id: string) => postJSON<{ position_id: string; margin_released: number; capital: number }>(`/positions/${id}/close`),
+
   // Risk
   getRisk: () => fetchJSON<RiskData>('/risk'),
 
@@ -189,11 +206,17 @@ export const api = {
   getActiveAccount: () => fetchJSON<any>('/accounts/active'),
   setActiveAccount: (id: string) => putJSON<any>('/accounts/active', { account_id: id }),
   createAccount: (body: any) => postJSON<any>('/accounts', body),
+  resetAccount: (id: string) => postJSON<{ message: string; capital: number }>(`/accounts/${id}/reset`),
+
+  // Scheduler
+  getSchedulerStatus: () => fetchJSON<{ running: boolean; current_time: string; weekday: string; market_hours: boolean }>('/scheduler/status'),
+  startScheduler: () => postJSON<{ status: string }>('/scheduler/start'),
+  stopScheduler: () => postJSON<{ status: string }>('/scheduler/stop'),
 
   // Health (note: /health is NOT under /api prefix)
   getHealth: async () => {
     const res = await fetch('/health');
     if (!res.ok) throw new Error(`API error: ${res.status}`);
-    return res.json() as Promise<{ status: string; llm: { model: string; available: boolean } }>;
+    return res.json() as Promise<{ status: string; llm: { model: string; available: boolean }; scheduler: boolean }>;
   },
 };

@@ -9,8 +9,10 @@ services:
       - .env
     volumes:
       - ./docker-data:/app/docker-data
+      - ./cache:/app/cache
     environment:
       - PYTHONUNBUFFERED=1
+      - TZ=Asia/Kolkata
     restart: unless-stopped
 
   frontend:

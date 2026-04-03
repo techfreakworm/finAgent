@@ -13,6 +13,9 @@ __pycache__/
 *.db
 docker-data/
 
+# API response cache
+cache/
+
 # Node
 node_modules/
 frontend/dist/

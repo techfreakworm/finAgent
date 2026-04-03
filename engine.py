@@ -39,7 +39,11 @@ class TradingEngine:
         from strategies.equity_momentum import EquityMomentum
 
         # Database
-        from backend.db.models import init_db, save_trade, save_signal, save_daily_pnl, log_event, get_account
+        from backend.db.models import (
+            init_db, save_trade, save_signal, save_daily_pnl, log_event,
+            get_account, save_position, close_position_db,
+            update_account_capital, get_open_positions, has_open_position,
+        )
 
         # Initialize DB
         init_db()
@@ -53,6 +57,12 @@ class TradingEngine:
         acc = get_account(account_id) or {}
         starting_capital = acc.get("current_capital", config.risk.starting_capital)
         hard_floor = acc.get("hard_floor", config.risk.hard_floor)
+
+        # DB functions for positions
+        self._save_position = save_position
+        self._close_position_db = close_position_db
+        self._update_account_capital = update_account_capital
+        self._has_open_position = has_open_position
 
         # Initialize components
         self.dhan = DhanClient()
@@ -118,8 +128,10 @@ class TradingEngine:
                 logger.warning("Empty option chain for %s", index)
                 return
 
-            # Get VIX
-            vix_df = self.equity_data.get_india_vix(period="5d")
+            # Get VIX (last 5 trading days)
+            from datetime import timedelta
+            vix_from = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+            vix_df = self.equity_data.get_india_vix(from_date=vix_from)
             vix = float(vix_df["Close"].iloc[-1]) if vix_df is not None and len(vix_df) > 0 else 14.0
 
             # Get spot
@@ -236,14 +248,26 @@ class TradingEngine:
                 logger.info("Skipping %s — margin insufficient", signal.symbol)
                 continue
 
+            # Skip if already holding this symbol+strategy
+            if self._has_open_position(signal.symbol, signal.strategy, self.account_id):
+                logger.info("Skipping %s — already have open position", signal.symbol)
+                self.pending_signals.remove(signal)
+                continue
+
+            # Check capital
+            if signal.margin_required > self.capital:
+                logger.info("Skipping %s — insufficient capital", signal.symbol)
+                continue
+
             # Create position
+            direction = "SHORT" if signal.direction == "SELL" else "LONG"
             position = Position(
                 symbol=signal.symbol,
                 strategy=signal.strategy,
                 entry_date=datetime.now(),
                 entry_price=signal.entry_price,
                 quantity=signal.lot_size,
-                direction=signal.direction,
+                direction=direction,
                 stop_loss=signal.stop_loss,
                 target=signal.target,
                 metadata=signal.metadata,
@@ -251,15 +275,31 @@ class TradingEngine:
 
             position_id = self.position_manager.add_position(position)
 
-            if config.paper_trading:
-                logger.info("[PAPER] Executed: %s %s %s @ ₹%.1f, qty=%d",
-                            signal.direction, signal.symbol, signal.strategy,
-                            signal.entry_price, signal.lot_size)
-            else:
-                # TODO: Place actual order via Dhan/Zerodha API
-                logger.info("[LIVE] Would execute: %s %s @ ₹%.1f", signal.direction, signal.symbol, signal.entry_price)
+            # Persist position to DB and deduct capital
+            self._save_position({
+                "id": position_id,
+                "symbol": signal.symbol,
+                "strategy": signal.strategy,
+                "direction": direction,
+                "entry_date": datetime.now().isoformat(),
+                "entry_price": signal.entry_price,
+                "quantity": signal.lot_size,
+                "stop_loss": signal.stop_loss,
+                "target": signal.target,
+                "margin_required": signal.margin_required,
+                "metadata": signal.metadata,
+            }, account_id=self.account_id)
 
-            self._log_event("TRADE_OPENED", f"{signal.direction} {signal.symbol}",
+            self.capital -= signal.margin_required
+            self._update_account_capital(self.account_id, self.capital)
+            self.margin_checker.update_capital(self.capital)
+
+            mode = "PAPER" if config.paper_trading else "LIVE"
+            logger.info("[%s] Executed: %s %s %s @ ₹%.1f, qty=%d, margin=₹%.0f, capital=₹%.0f",
+                        mode, signal.direction, signal.symbol, signal.strategy,
+                        signal.entry_price, signal.lot_size, signal.margin_required, self.capital)
+
+            self._log_event("TRADE_OPENED", f"{signal.direction} {signal.symbol} | margin ₹{signal.margin_required:,.0f} | capital ₹{self.capital:,.0f}",
                             {"position_id": position_id, "price": signal.entry_price,
                              "strategy": signal.strategy, "paper": config.paper_trading})
 
@@ -308,10 +348,16 @@ class TradingEngine:
                 cost = self.costs.delivery_round_trip_cost(entry_val, exit_val)
                 slippage = entry_val * 0.001
 
+            # Restore margin + apply P&L
+            margin_used = entry_val  # approximate margin as position value
             pnl_net = result["pnl_gross"] - cost - slippage
-            self.capital += pnl_net
+            self.capital += margin_used + pnl_net
             self.floor_monitor.update_capital(self.capital)
             self.margin_checker.update_capital(self.capital)
+
+            # Persist: close position in DB + update capital
+            self._close_position_db(position_id, self.account_id)
+            self._update_account_capital(self.account_id, self.capital)
 
             self._save_trade({
                 "position_id": position_id,
@@ -328,12 +374,12 @@ class TradingEngine:
                 "slippage": slippage,
                 "pnl_net": pnl_net,
                 "exit_reason": reason,
-                "margin_used": result.get("margin_used", 0),
+                "margin_used": margin_used,
                 "metadata": result.get("metadata", {}),
             })
 
-            logger.info("Position closed: %s %s, P&L net: ₹%s, reason: %s",
-                         result["symbol"], result["strategy"], f"{pnl_net:,.0f}", reason)
+            logger.info("Position closed: %s %s, P&L net: ₹%s, capital: ₹%s, reason: %s",
+                         result["symbol"], result["strategy"], f"{pnl_net:,.0f}", f"{self.capital:,.0f}", reason)
 
     def generate_daily_report(self):
         """Generate and persist daily summary."""

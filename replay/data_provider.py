@@ -432,7 +432,11 @@ class ReplayDataProvider:
         if master_index.tz is not None:
             master_index = master_index.tz_localize(None)
             nifty_df.index = master_index
-            self.data["nifty"] = nifty_df
+        # Remove duplicate timestamps in master (can happen with chunked API responses)
+        if master_index.duplicated().any():
+            nifty_df = nifty_df[~nifty_df.index.duplicated(keep="last")]
+            master_index = nifty_df.index
+        self.data["nifty"] = nifty_df
 
         # Re-index every DataFrame to the master timeline
         for key in list(self.data.keys()):
@@ -448,6 +452,9 @@ class ReplayDataProvider:
             # Strip timezone to match master
             if df.index.tz is not None:
                 df.index = df.index.tz_localize(None)
+            # Remove duplicate timestamps before reindexing
+            if df.index.duplicated().any():
+                df = df[~df.index.duplicated(keep="last")]
             # Reindex to master, forward-fill gaps, then back-fill leading NaNs
             self.data[key] = df.reindex(master_index, method="ffill").bfill()
 

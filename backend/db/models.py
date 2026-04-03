@@ -39,7 +39,7 @@ def init_db():
             starting_capital REAL NOT NULL,
             current_capital REAL NOT NULL,
             hard_floor REAL NOT NULL,
-            created_at TEXT DEFAULT (datetime('now')),
+            created_at TEXT DEFAULT (datetime('now', 'localtime')),
             is_active INTEGER DEFAULT 1,
             settings TEXT
         );
@@ -63,7 +63,7 @@ def init_db():
             exit_reason TEXT,
             margin_used REAL,
             metadata TEXT,
-            created_at TEXT DEFAULT (datetime('now'))
+            created_at TEXT DEFAULT (datetime('now', 'localtime'))
         );
 
         CREATE TABLE IF NOT EXISTS signals (
@@ -81,7 +81,7 @@ def init_db():
             reasoning TEXT,
             metadata TEXT,
             status TEXT DEFAULT 'PENDING',
-            created_at TEXT DEFAULT (datetime('now'))
+            created_at TEXT DEFAULT (datetime('now', 'localtime'))
         );
 
         CREATE TABLE IF NOT EXISTS daily_pnl (
@@ -106,7 +106,7 @@ def init_db():
             event_type TEXT NOT NULL,
             message TEXT NOT NULL,
             data TEXT,
-            created_at TEXT DEFAULT (datetime('now'))
+            created_at TEXT DEFAULT (datetime('now', 'localtime'))
         );
 
         CREATE INDEX IF NOT EXISTS idx_trades_account ON trades(account_id);
@@ -116,6 +116,26 @@ def init_db():
         -- idx_daily_pnl_account created after migration
         CREATE INDEX IF NOT EXISTS idx_events_account ON events(account_id);
         CREATE INDEX IF NOT EXISTS idx_events_type ON events(event_type);
+
+        CREATE TABLE IF NOT EXISTS positions (
+            id TEXT PRIMARY KEY,
+            account_id TEXT NOT NULL DEFAULT 'paper',
+            symbol TEXT NOT NULL,
+            strategy TEXT NOT NULL,
+            direction TEXT NOT NULL,
+            entry_date TEXT NOT NULL,
+            entry_price REAL NOT NULL,
+            quantity INTEGER NOT NULL,
+            stop_loss REAL DEFAULT 0,
+            target REAL DEFAULT 0,
+            margin_required REAL DEFAULT 0,
+            current_price REAL DEFAULT 0,
+            metadata TEXT DEFAULT '{}',
+            status TEXT DEFAULT 'OPEN',
+            created_at TEXT DEFAULT (datetime('now', 'localtime'))
+        );
+        CREATE INDEX IF NOT EXISTS idx_positions_account ON positions(account_id);
+        CREATE INDEX IF NOT EXISTS idx_positions_status ON positions(status);
     """)
 
     # Ensure default accounts exist
@@ -206,7 +226,7 @@ def delete_account(account_id: str):
     if account_id in ("paper", "live"):
         raise ValueError("Cannot delete paper or live accounts")
     conn = get_connection()
-    for table in ["trades", "signals", "daily_pnl", "events"]:
+    for table in ["trades", "signals", "daily_pnl", "events", "positions"]:
         conn.execute(f"DELETE FROM {table} WHERE account_id = ?", (account_id,))
     conn.execute("DELETE FROM accounts WHERE id = ?", (account_id,))
     conn.commit()
@@ -332,6 +352,71 @@ def get_events(account_id: str = DEFAULT_ACCOUNT, event_type: str = None, limit:
         ).fetchall()
     conn.close()
     return [dict(r) for r in rows]
+
+
+# ============================================================
+# POSITION OPERATIONS (open position tracking)
+# ============================================================
+
+def save_position(position: dict, account_id: str = DEFAULT_ACCOUNT):
+    """Persist an open position to the DB."""
+    conn = get_connection()
+    conn.execute("""
+        INSERT INTO positions (id, account_id, symbol, strategy, direction, entry_date,
+            entry_price, quantity, stop_loss, target, margin_required, current_price, metadata)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (position["id"], account_id, position["symbol"], position["strategy"],
+          position["direction"], position["entry_date"], position["entry_price"],
+          position["quantity"], position.get("stop_loss", 0), position.get("target", 0),
+          position.get("margin_required", 0), position.get("current_price", position["entry_price"]),
+          json.dumps(position.get("metadata", {}))))
+    conn.commit()
+    conn.close()
+
+
+def close_position_db(position_id: str, account_id: str = DEFAULT_ACCOUNT):
+    """Mark a position as CLOSED in the DB."""
+    conn = get_connection()
+    conn.execute(
+        "UPDATE positions SET status = 'CLOSED' WHERE id = ? AND account_id = ?",
+        (position_id, account_id)
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_open_positions(account_id: str = DEFAULT_ACCOUNT) -> list[dict]:
+    """Return all open positions for an account."""
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT * FROM positions WHERE account_id = ? AND status = 'OPEN' ORDER BY created_at DESC",
+        (account_id,)
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def get_open_positions_summary(account_id: str = DEFAULT_ACCOUNT) -> dict:
+    """Return count and total margin of open positions."""
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT COUNT(*) as count, COALESCE(SUM(margin_required), 0) as total_margin "
+        "FROM positions WHERE account_id = ? AND status = 'OPEN'",
+        (account_id,)
+    ).fetchone()
+    conn.close()
+    return {"count": row["count"], "total_margin": row["total_margin"]}
+
+
+def has_open_position(symbol: str, strategy: str, account_id: str = DEFAULT_ACCOUNT) -> bool:
+    """Check if there's already an open position for this symbol+strategy."""
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT COUNT(*) as n FROM positions WHERE account_id = ? AND symbol = ? AND strategy = ? AND status = 'OPEN'",
+        (account_id, symbol, strategy)
+    ).fetchone()
+    conn.close()
+    return row["n"] > 0
 
 
 def get_strategy_summary(account_id: str = DEFAULT_ACCOUNT) -> dict:

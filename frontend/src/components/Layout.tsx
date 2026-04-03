@@ -87,6 +87,10 @@ export default function Layout() {
             <div className={`w-1.5 h-1.5 rounded-full ${health?.status === 'ok' ? 'bg-emerald-400' : 'bg-red-400'}`} />
             API: {health?.status === 'ok' ? 'Connected' : 'Error'}
           </div>
+          <div className="flex items-center gap-2 px-2 py-1 text-xs text-gray-500">
+            <div className={`w-1.5 h-1.5 rounded-full ${health?.scheduler ? 'bg-amber-400 animate-pulse' : 'bg-gray-600'}`} />
+            Scheduler: {health?.scheduler ? 'Running' : 'Off'}
+          </div>
         </div>
       </aside>
 

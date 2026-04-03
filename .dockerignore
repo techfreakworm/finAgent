@@ -10,3 +10,4 @@ frontend/dist/
 *.log
 .env
 dhan_api_spec.json
+cache/

@@ -3,7 +3,8 @@
 import logging
 from uuid import uuid4
 from fastapi import APIRouter
-from backend.db.models import get_accounts, get_account, create_account, delete_account
+from backend.db.models import get_accounts, get_account, create_account, delete_account, update_account_capital
+from config import config
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["accounts"])
@@ -60,3 +61,25 @@ def remove_account(account_id: str):
         return {"message": f"Account '{account_id}' deleted"}
     except ValueError as e:
         return {"error": str(e)}
+
+
+@router.post("/accounts/{account_id}/reset")
+def reset_account(account_id: str):
+    """Clear all data for an account and reset capital to starting value."""
+    from backend.db.models import get_connection
+
+    acc = get_account(account_id)
+    if not acc:
+        return {"error": f"Account '{account_id}' not found"}
+
+    conn = get_connection()
+    for table in ["trades", "signals", "daily_pnl", "events", "positions"]:
+        conn.execute(f"DELETE FROM {table} WHERE account_id = ?", (account_id,))
+    conn.commit()
+    conn.close()
+
+    starting = acc.get("starting_capital", config.risk.starting_capital)
+    update_account_capital(account_id, starting)
+
+    logger.info("Account '%s' reset: all data cleared, capital restored to ₹%.0f", account_id, starting)
+    return {"message": f"Account '{account_id}' reset", "capital": starting}

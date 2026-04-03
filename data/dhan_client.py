@@ -6,6 +6,7 @@ import time
 from datetime import datetime, timedelta
 import requests
 from config import config
+from data.cache import DhanDataCache
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,14 @@ class DhanClient:
             "client-id": config.dhan.client_id,
         })
         self.base_url = config.dhan.base_url
+        self._cache = DhanDataCache()
 
     def _post(self, endpoint: str, payload: dict) -> dict | None:
+        # Check cache first (only hits for immutable historical endpoints)
+        cached = self._cache.get(endpoint, payload)
+        if cached is not None:
+            return cached
+
         try:
             resp = self.session.post(
                 f"{self.base_url}{endpoint}",
@@ -39,7 +46,9 @@ class DhanClient:
                     timeout=30,
                 )
             if resp.status_code == 200:
-                return resp.json()
+                result = resp.json()
+                self._cache.put(endpoint, payload, result)
+                return result
             logger.error("POST %s → %d: %s", endpoint, resp.status_code, resp.text[:200])
             return None
         except Exception as e:

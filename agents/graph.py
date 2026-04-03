@@ -41,13 +41,21 @@ def run_workflow(capital: float = None, paper_mode: bool = True) -> dict:
     """Run the full trading workflow and return final state."""
     from config import config
     from datetime import datetime
+    from backend.db.models import get_account
+    from backend.api.accounts_api import get_active_account_id
 
+    # Read actual capital from DB (reflects prior trades)
     if capital is None:
-        capital = config.risk.starting_capital
+        account_id = get_active_account_id()
+        acc = get_account(account_id)
+        capital = acc["current_capital"] if acc else config.risk.starting_capital
+        floor = acc["hard_floor"] if acc else config.risk.hard_floor
+    else:
+        floor = config.risk.hard_floor
 
     initial_state = {
         "capital": capital,
-        "floor": config.risk.hard_floor,
+        "floor": floor,
         "paper_mode": paper_mode,
         "timestamp": datetime.now().isoformat(),
         "signals": [],
