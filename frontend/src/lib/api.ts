@@ -29,7 +29,9 @@ async function putJSON<T>(url: string, body: unknown): Promise<T> {
 // ---- Types ----
 
 export interface PortfolioData {
+  account_id: string;
   capital: number;
+  available_capital: number;
   starting_capital: number;
   hard_floor: number;
   floor_distance: number;
