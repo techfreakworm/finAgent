@@ -150,6 +150,127 @@ class MinLotOverrideEngine:
 
 
 # ---------------------------------------------------------------------------
+# ZerodteFixedLotEngine — fixed-1-lot shim for short straddle accounts
+# ---------------------------------------------------------------------------
+
+class ZerodteFixedLotEngine:
+    """Wraps IntradayRiskEngine for the 'paper-0dte' short-straddle account.
+
+    The standard engine sizes by entry-to-stop distance.  For a short straddle
+    the OrderIntent carries a wide catastrophic stop (3× premium) so the
+    standard formula yields 0 lots.  This shim intercepts SELL intents from
+    the 'zerodte_straddle' strategy and applies fixed-1-lot sizing instead,
+    subject to an implied-risk cap.
+
+    Implied-risk check (per leg):
+        implied_risk = 0.25 × ref_price × lot_size(on)
+        cap          = MAX_RISK_PCT × capital   (default 1.2%)
+    If implied_risk > cap → Rejection('zerodte_oversize').
+    Margin proxy: 12% notional (same short-option proxy as the inner engine).
+
+    All other intents (non-straddle) are forwarded to the inner engine.
+    All session-lifecycle and circuit-breaker checks (breaker, floor, position
+    caps, etc.) are delegated to the inner engine first so those invariants
+    are preserved.
+    """
+
+    MAX_RISK_PCT: float = 0.012   # 1.2% of capital implied-risk cap per leg
+
+    _ZERODTE_STRATEGY_ID = "zerodte_straddle"
+
+    def __init__(self, engine: IntradayRiskEngine) -> None:
+        self._engine = engine
+
+    def size(
+        self,
+        intent: OrderIntent,
+        snapshot: RiskSnapshot,
+        on: date,
+    ) -> SizedOrder | Rejection:
+        """Fixed 1-lot for zerodte SELL intents; delegate everything else."""
+        is_zerodte_sell = (
+            intent.strategy_id == self._ZERODTE_STRATEGY_ID
+            and intent.side is Side.SELL
+            and intent.instrument.is_derivative
+        )
+
+        if not is_zerodte_sell:
+            return self._engine.size(intent, snapshot, on)
+
+        # Delegate to inner engine — this validates breaker, floor, t2t, and
+        # position caps.  The result will typically be Rejection('zero_qty')
+        # because the catastrophic stop yields 0 lots; we override that below.
+        result = self._engine.size(intent, snapshot, on)
+
+        if isinstance(result, SizedOrder):
+            # Correctly sized by inner engine (unexpected but safe to accept).
+            return result
+
+        assert isinstance(result, Rejection)
+        if result.rule not in ("zero_qty", "margin_exceeded"):
+            # Real rejection (breaker, floor, position cap, etc.) — honour it.
+            return result
+
+        # Override: compute fixed-1-lot implied risk
+        lot_sz      = intent.instrument.lot_size(on)
+        implied_risk = 0.25 * intent.ref_price * lot_sz
+        max_risk     = self.MAX_RISK_PCT * self._engine._params.capital
+
+        if implied_risk > max_risk:
+            return Rejection(
+                intent=intent,
+                rule="zerodte_oversize",
+                detail=(
+                    f"implied_risk={implied_risk:.2f} > cap={max_risk:.2f} "
+                    f"(1.2% × capital={self._engine._params.capital:.0f}); "
+                    "ref_price too high for fixed-1-lot"
+                ),
+            )
+
+        # Margin: 12% notional short-option proxy (same as inner engine)
+        notional = intent.ref_price * 1 * lot_sz
+        margin   = 0.12 * notional
+
+        available = (
+            snapshot.capital
+            + snapshot.realized_pnl_today
+            - self._engine.state.committed_margin
+        )
+        if margin > available:
+            return Rejection(
+                intent=intent,
+                rule="margin_exceeded",
+                detail=(
+                    f"need ₹{margin:.2f}, available ₹{available:.2f} "
+                    f"(capital={snapshot.capital:.2f} + realized="
+                    f"{snapshot.realized_pnl_today:.2f} - committed="
+                    f"{self._engine.state.committed_margin:.2f})"
+                ),
+            )
+
+        return SizedOrder(intent=intent, quantity=1, margin_required=margin)
+
+    def on_bar(self, snapshot: RiskSnapshot) -> list[ExitReason]:
+        return self._engine.on_bar(snapshot)
+
+    def register_fill(self, order: SizedOrder) -> None:
+        self._engine.register_fill(order)
+
+    def register_close(self, symbol: str, margin_freed: float) -> None:
+        self._engine.register_close(symbol, margin_freed)
+
+    def reset_for_session(self, session_date: date) -> None:
+        self._engine.reset_for_session(session_date)
+
+    def load_state(self, state: "SessionRiskState") -> None:
+        self._engine.load_state(state)
+
+    @property
+    def state(self) -> "SessionRiskState":
+        return self._engine.state
+
+
+# ---------------------------------------------------------------------------
 # PaperExecutor
 # ---------------------------------------------------------------------------
 
@@ -260,9 +381,20 @@ class PaperExecutor:
         self._bar_history[instr].append(bar)
         hist_before = self._bar_history[instr][:-1]
 
+        def _same_instrument(a: Instrument, b: Instrument) -> bool:
+            """Compare two instruments by symbol and security_id.
+
+            Uses field-level comparison rather than object equality so that a
+            _ReconstructedInstrument (loaded from the crash-recovery DB) and
+            a live Instrument with identical fields are treated as the same
+            instrument.  The two types are intentionally different classes, so
+            dataclass __eq__ returns False even when all fields match.
+            """
+            return a.symbol == b.symbol and a.security_id == b.security_id
+
         def _hist_before_for(instrument: Instrument) -> list[Bar]:
             h = self._bar_history.get(instrument, [])
-            return h[:-1] if instrument is instr else list(h)
+            return h[:-1] if _same_instrument(instrument, instr) else list(h)
 
         def _ist_time(ts: datetime) -> time:
             return ts.astimezone(IST).replace(tzinfo=None).time()
@@ -273,6 +405,9 @@ class PaperExecutor:
         if not self._squared_off and ts_close_naive >= self._hard_flat:
             for pid in list(self._open_positions):
                 pos = self._open_positions[pid]
+                # Use this bar for matching-instrument positions; for others use
+                # bar.open as a price proxy (hard flat is a time-critical force-exit
+                # — cross-instrument fill inaccuracy is acceptable at 15:19:30).
                 exit_slip = self._slip.exit_slippage(
                     pos.instrument,
                     _hist_before_for(pos.instrument),
@@ -291,10 +426,18 @@ class PaperExecutor:
             return  # nothing else this bar
 
         # ── (2) PROCESS FORCE-EXITS ───────────────────────────────────
+        # Only process force-exits for positions in the current bar's instrument.
+        # For multi-instrument accounts, a force-exit queued on a CE bar must not
+        # execute against a NIFTY-FUT bar's open price.  Unmatched force-exits
+        # remain in the queue and are processed when the matching bar arrives.
+        remaining_force_exits: list[tuple[str, ExitReason]] = []
         for pid, reason in list(self._force_exits):
             if pid not in self._open_positions:
-                continue
+                continue  # position already closed; drop silently
             pos = self._open_positions[pid]
+            if not _same_instrument(pos.instrument, instr):
+                remaining_force_exits.append((pid, reason))
+                continue
             exit_slip = self._slip.exit_slippage(
                 pos.instrument,
                 _hist_before_for(pos.instrument),
@@ -305,10 +448,16 @@ class PaperExecutor:
             pos.exit_ts = bar.ts_open
             pos.exit_reason = reason
             self._close_pos(pos, exit_slip, bar.ts_open)
-        self._force_exits.clear()
+        self._force_exits = remaining_force_exits
 
         # ── (3) FILL PENDING ENTRY ORDERS ─────────────────────────────
-        for order in self._pending_orders:
+        # Only fill orders whose instrument matches the current bar.
+        # Multi-instrument accounts (e.g. short straddle) queue orders for
+        # specific option legs; filling them on an unrelated bar (e.g. the
+        # underlying futures bar) would produce nonsense entry prices.
+        orders_to_fill = [o for o in self._pending_orders
+                          if _same_instrument(o.intent.instrument, instr)]
+        for order in orders_to_fill:
             e_slip = self._slip.entry_slippage(order.intent.instrument, hist_before)
             e_price = entry_fill(bar, order.intent.side, e_slip)
             pid = str(uuid.uuid4())
@@ -360,11 +509,19 @@ class PaperExecutor:
                 },
             )
 
-        self._pending_orders.clear()
+        # Retain orders for instruments that did not receive a bar this tick.
+        self._pending_orders = [o for o in self._pending_orders
+                                if not _same_instrument(o.intent.instrument, instr)]
 
         # ── (4) CHECK STOP / TARGET ────────────────────────────────────
+        # Only check stop/target for positions in the instrument of the current bar.
+        # Applying stop logic from an unrelated instrument's bar (e.g. checking a
+        # NIFTY-FUT bar's OHLC against an option position's stop) produces wrong
+        # exits because the bar prices belong to a different market.
         for pid in list(self._open_positions):
             pos = self._open_positions[pid]
+            if not _same_instrument(pos.instrument, instr):
+                continue                # skip positions not in this bar's instrument
             pos_hist_before = _hist_before_for(pos.instrument)
             triggered = resolve_bar(bar, pos)
             if triggered is ExitReason.STOP:

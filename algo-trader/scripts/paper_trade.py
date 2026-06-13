@@ -71,11 +71,12 @@ log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 try:
-    from algotrader.paper.executor import PaperExecutor, MinLotOverrideEngine
+    from algotrader.paper.executor import PaperExecutor, MinLotOverrideEngine, ZerodteFixedLotEngine
     _EXECUTOR_AVAILABLE = True
 except ImportError:
     PaperExecutor = None  # type: ignore[assignment,misc]
     MinLotOverrideEngine = None  # type: ignore[assignment,misc]
+    ZerodteFixedLotEngine = None  # type: ignore[assignment,misc]
     _EXECUTOR_AVAILABLE = False
     log.warning("PaperExecutor not available")
 
@@ -131,6 +132,14 @@ ACCOUNTS: dict[str, dict] = {
         "minlot_cap_pct": None,
         "expression": "options",
     },
+    # 0DTE expiry-day ATM short straddle (NIFTY weekly).  Fixed-1-lot sizing
+    # via ZerodteFixedLotEngine; auto-fires only on NIFTY weekly expiry days.
+    "paper-0dte": {
+        "per_trade_risk_pct": 0.0075,
+        "minlot": False,
+        "minlot_cap_pct": None,
+        "expression": "zerodte_straddle",
+    },
 }
 
 try:
@@ -164,7 +173,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--accounts",
         nargs="+",
-        default=["paper", "paper-fut-c", "paper-opt-c"],
+        default=["paper", "paper-fut-c", "paper-opt-c", "paper-0dte"],
         metavar="ACCOUNT_ID",
         help=(
             "Account IDs (space- or comma-separated). "
@@ -277,7 +286,7 @@ def _build_executor(
     """
     from algotrader.backtest.costs import DhanCosts
     from algotrader.data.instruments import NIFTY_FUT, BANKNIFTY_FUT
-    from algotrader.paper.executor import PaperExecutor, MinLotOverrideEngine
+    from algotrader.paper.executor import PaperExecutor, MinLotOverrideEngine, ZerodteFixedLotEngine
     from algotrader.paper.store import PaperStore
     from algotrader.risk.engine import IntradayRiskEngine, RiskParams
     from algotrader.strategies.breadth_rider import BreadthRider
@@ -308,7 +317,11 @@ def _build_executor(
     per_trade_risk_pct = cfg.get("per_trade_risk_pct", rc.per_trade_risk_pct)
 
     # ── Strategy list ─────────────────────────────────────────────────
-    if expression == "options":
+    if expression == "zerodte_straddle":
+        from algotrader.strategies.zerodte_straddle_live import ZerodteStraddleLive
+        strat = ZerodteStraddleLive(subscribe_cb=subscribe_cb)
+        strategies = [strat]
+    elif expression == "options":
         from algotrader.strategies.breadth_rider_options import BreadthRiderOptions
         strat = BreadthRiderOptions(
             **_CELL,
@@ -344,7 +357,11 @@ def _build_executor(
     )
     risk = IntradayRiskEngine(params)
 
-    if use_minlot:
+    if expression == "zerodte_straddle":
+        # Fixed-1-lot shim for the short straddle; standard sizing is wrong
+        # for this strategy (wide catastrophic stop yields 0 lots).
+        risk_engine = ZerodteFixedLotEngine(risk)
+    elif use_minlot:
         shim = MinLotOverrideEngine(risk)
         if minlot_cap_pct is not None and per_trade_risk_pct > 0:
             # Override the budget factor so the promoted lot's risk does not
@@ -476,15 +493,16 @@ class _BarRouter:
     All bars (equity + futures + options) go to LiveBreadth.
     Only derivative bars go to PaperExecutors, with selective routing:
 
-    - Futures bars (symbol contains "FUT" or is_derivative and no "-CE"/"-PE")
-      are routed to **futures executors** (expression != "options").
     - Option bars (symbol contains "-CE" or "-PE") are routed to
-      **options executors** (expression == "options") ONLY.
+      **options executors** (expression == "options" or "zerodte_straddle") ONLY.
+    - Futures bars are routed to **ALL** executors — both futures-only accounts
+      and options/straddle accounts that need the underlying bar for entry
+      signals (BreadthRiderOptions at 10:15; ZerodteStraddleLive at 09:20).
 
-    This ensures that option bars from a live subscribe_dynamic call do not
-    confuse futures executors (which have no ATM option strategy) and that
-    futures bars do not trigger the options strategy's pending-intent logic
-    on the wrong instrument.
+    This corrects the earlier routing limitation where options-expression
+    executors were blind to the underlying futures bars they need for signals.
+    Futures bars in options strategies are silently ignored for instruments the
+    strategy does not track (safe: each strategy filters by symbol internally).
     """
 
     def __init__(
@@ -524,16 +542,19 @@ class _BarRouter:
             is_opt = self._is_option_bar(bar.instrument.symbol)
             for executor in self._executors:
                 is_opt_exec = executor.account_id in self._opt_accounts
-                # Route option bars → options executors; futures bars → futures executors.
-                if is_opt and is_opt_exec:
-                    try:
-                        executor.on_bar(bar)
-                    except Exception:
-                        log.exception(
-                            "PaperExecutor.on_bar raised for %s (option bar)",
-                            executor.account_id,
-                        )
-                elif not is_opt and not is_opt_exec:
+                if is_opt:
+                    # Option bars → options/straddle executors only.
+                    if is_opt_exec:
+                        try:
+                            executor.on_bar(bar)
+                        except Exception:
+                            log.exception(
+                                "PaperExecutor.on_bar raised for %s (option bar)",
+                                executor.account_id,
+                            )
+                else:
+                    # Futures bars → ALL executors (options strategies need
+                    # underlying signal bars; strategies filter internally).
                     try:
                         executor.on_bar(bar)
                     except Exception:
@@ -579,10 +600,11 @@ def _run_replay(args: argparse.Namespace, replay_date: date) -> list:
             )
             executors.append(exec_)
 
-    # Determine which accounts run the options expression for BarRouter routing.
+    # Determine which accounts receive option bars (CE/PE routing).
+    # Both 'options' and 'zerodte_straddle' expressions subscribe to option bars.
     opt_accounts = {
         aid for aid in args.accounts
-        if ACCOUNTS.get(aid, {}).get("expression") == "options"
+        if ACCOUNTS.get(aid, {}).get("expression") in ("options", "zerodte_straddle")
     }
     router = _BarRouter(breadth, executors, replay_date, opt_accounts=opt_accounts)
 
@@ -640,10 +662,10 @@ def _run_live(args: argparse.Namespace, session_date: date) -> list:
             )
             executors.append(exec_)
 
-    # Determine options accounts for BarRouter routing.
+    # Determine which accounts receive option bars (CE/PE routing).
     opt_accounts = {
         aid for aid in args.accounts
-        if ACCOUNTS.get(aid, {}).get("expression") == "options"
+        if ACCOUNTS.get(aid, {}).get("expression") in ("options", "zerodte_straddle")
     }
     router = _BarRouter(breadth, executors, session_date, opt_accounts=opt_accounts)
 
@@ -657,20 +679,21 @@ def _run_live(args: argparse.Namespace, session_date: date) -> list:
         access_token=token,
     )
 
-    # Wire subscribe_cb to BreadthRiderOptions strategies AFTER the feed is
+    # Wire subscribe_cb to options/straddle strategies AFTER the feed is
     # created so the callback is the live feed's subscribe_dynamic method.
     try:
         from algotrader.strategies.breadth_rider_options import BreadthRiderOptions
+        from algotrader.strategies.zerodte_straddle_live import ZerodteStraddleLive
         for exec_ in executors:
             for strat in exec_._strategies:
-                if isinstance(strat, BreadthRiderOptions):
+                if isinstance(strat, (BreadthRiderOptions, ZerodteStraddleLive)):
                     strat.subscribe_cb = feed.subscribe_dynamic
                     log.info(
                         "Wired subscribe_cb for %s / %s",
                         exec_.account_id, strat.strategy_id,
                     )
     except ImportError:
-        log.warning("BreadthRiderOptions not available; options accounts will be inert")
+        log.warning("BreadthRiderOptions/ZerodteStraddleLive not available; options accounts will be inert")
 
     _stop = [False]
     def _handle_sig(sig, frame):  # noqa: ANN001

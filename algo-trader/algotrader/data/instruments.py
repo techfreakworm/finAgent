@@ -81,7 +81,15 @@ class FnoInstrument(Instrument):
       anything else → raises ValueError so unknown schedules fail loudly.
 
     For equities (is_derivative=False) use the base Instrument directly.
+
+    expiry_date:
+        Populated by option_resolver.resolve_option() so callers can check
+        whether the resolved contract's expiry falls on a given date (e.g.
+        the 0DTE expiry-day self-gate).  None for non-expiring instruments
+        (futures singletons such as NIFTY_FUT).
     """
+
+    expiry_date: date | None = None
 
     def lot_size(self, on: date) -> int:  # type: ignore[override]
         """Return the point-in-time lot size for this derivative on *on*."""

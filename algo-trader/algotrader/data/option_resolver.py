@@ -280,4 +280,5 @@ def resolve_option(
         is_derivative=True,
         underlying=underlying,
         can_short_intraday=True,
+        expiry_date=nearest_expiry,
     )
