@@ -1,0 +1,13 @@
+[Unit]
+Description=algo-trader: mint fresh Dhan 24h access token (paper data auth)
+Documentation=https://github.com/techfreakworm/finAgent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/projects/algo-trader
+Environment=TZ=Asia/Kolkata
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/ubuntu/projects/algo-trader/.venv/bin/python -m algotrader.data.token_manager

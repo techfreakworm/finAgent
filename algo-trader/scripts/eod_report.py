@@ -1,0 +1,60 @@
+"""Standalone EOD P&L report generator (suspenders for the paper session).
+
+The paper session runner publishes its own EOD report at ~15:35; THIS script
+runs from a separate systemd timer at 15:45 so the operator gets the daily P&L
+even if the session process died early — it reads whatever is in the paper
+store and generates + publishes from that. Idempotent (re-renders the same
+reports/daily/<date>.{md,html}).
+
+PAPER-ONLY: reads the local SQLite paper store; never touches the broker.
+
+Usage: .venv/bin/python scripts/eod_report.py [--date YYYY-MM-DD]
+                                              [--accounts a,b,c] [--no-publish]
+"""
+from __future__ import annotations
+
+import argparse
+import sys
+from datetime import date, datetime
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+PROJECT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT))
+
+from algotrader.reports.eod import generate_eod_report, publish  # noqa: E402
+
+IST = ZoneInfo("Asia/Kolkata")
+DEFAULT_ACCOUNTS = ["paper", "paper-fut-c", "paper-opt-c", "paper-0dte"]
+STORE_DIR = PROJECT / "data" / "paper"
+
+
+def _accounts_with_data(accounts: list[str]) -> list[str]:
+    """Only include accounts whose store DB exists, so a not-yet-wired account
+    (e.g. paper-0dte before its first run) never breaks report generation."""
+    present = [a for a in accounts if (STORE_DIR / f"{a}.db").exists()]
+    return present or accounts[:1]
+
+
+def main(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(description="Standalone EOD P&L report.")
+    p.add_argument("--date", help="YYYY-MM-DD (default: today IST)")
+    p.add_argument("--accounts", help="comma-separated (default: all paper accounts present)")
+    p.add_argument("--no-publish", action="store_true", help="write local only")
+    args = p.parse_args(argv)
+
+    session_date = (date.fromisoformat(args.date) if args.date
+                    else datetime.now(IST).date())
+    accounts = (args.accounts.split(",") if args.accounts
+                else _accounts_with_data(DEFAULT_ACCOUNTS))
+
+    md_path, html_path = generate_eod_report(session_date, accounts)
+    print(f"EOD report: {md_path} | {html_path} | accounts={accounts}")
+    if not args.no_publish:
+        url = publish(html_path)
+        print(f"published: {url}" if url else "publish FAILED (local report still written)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

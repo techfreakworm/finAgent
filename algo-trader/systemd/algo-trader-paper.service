@@ -1,0 +1,16 @@
+[Unit]
+Description=algo-trader: intraday PAPER session (breadth accounts + 0DTE on expiry); persists trades, publishes EOD P&L. PAPER-ONLY, no live orders.
+Documentation=https://github.com/techfreakworm/finAgent
+After=network-online.target algo-trader-token.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/projects/algo-trader
+Environment=TZ=Asia/Kolkata
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/ubuntu/projects/algo-trader/.venv/bin/python scripts/paper_trade.py --log-level INFO
+# The session self-exits ~15:35 IST after publishing EOD. Hard safety cap at 15:45.
+RuntimeMaxSec=24300
+# No Restart=: a clean exit at end-of-session is expected, not a failure to retry.

@@ -1,0 +1,12 @@
+[Unit]
+Description=algo-trader: generate + publish daily EOD P&L report from the paper store (suspenders if the session died early). PAPER-ONLY.
+Documentation=https://github.com/techfreakworm/finAgent
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/projects/algo-trader
+Environment=TZ=Asia/Kolkata
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/ubuntu/projects/algo-trader/.venv/bin/python scripts/eod_report.py

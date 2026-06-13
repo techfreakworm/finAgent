@@ -1,0 +1,9 @@
+[Unit]
+Description=algo-trader: EOD report + open-position watchdog at 15:55 IST
+
+[Timer]
+OnCalendar=Mon-Fri 15:55:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,9 @@
+[Unit]
+Description=algo-trader: refresh Dhan token at 08:45 IST on trading days
+
+[Timer]
+OnCalendar=Mon-Fri 08:45:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
