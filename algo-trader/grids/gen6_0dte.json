@@ -1,0 +1,16 @@
+{
+  "generation": 6,
+  "registered_at": "2026-06-12T05:30:00+05:30",
+  "notes": [
+    "Pre-registered. NEW family: expiry-day (0DTE) ATM short straddle on NIFTY — intraday theta capture with hard risk controls. Entirely different hypothesis from the killed breakout/reversion/breadth-debit families.",
+    "Mechanics: at entry_time sell 1 lot ATM CE + 1 lot ATM PE (K = spot rounded to 50; entry premiums REAL from the 0DTE series — both legs are ATM at entry so re-anchoring is irrelevant at that instant); track the FIXED-strike straddle value synthetically (BS both legs, series IV per leg, tau implied at entry from the real straddle); STOP buyback if straddle value >= entry*(1+stop_pct) with widened 2.5% slippage (expiry tails gap); optional profit-take at entry*(1-take_pct); square-off buyback 15:10. Costs: 4 option orders, date-banded STT on sell legs.",
+    "Sizing: 1 lot only (short-straddle margin ~1.5-2L fits Rs5L once); risk proxy = stop_pct*premium*lot; the 2% daily breaker is the hard backstop; tail risk beyond stop disclosed (gap-through modeled at stop level + 2.5% slip; a stress variant doubles that).",
+    "FENCE: evaluate ONLY the Thursday era <= 2025-08-28 (~219 days). The Tuesday era (2025-09-09+) is THIS FAMILY'S fresh holdout (never touched by any prior decision) and doubles as a regime-change test.",
+    "Evidence bar (fenced): n >= 180, PF >= 1.3 (tail-risk premium over the usual 1.25), posW >= 55% by 2-month windows, worst window > -3% capital, survives slippage doubling. Then ONE holdout shot on the Tuesday era."
+  ],
+  "grid": {
+    "entry_time": ["09:20", "10:15"],
+    "stop_pct": [0.25, 0.40],
+    "take_pct": [0.5, null]
+  }
+}

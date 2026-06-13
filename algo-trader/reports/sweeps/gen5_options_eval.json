@@ -1,0 +1,224 @@
+[
+ {
+  "config": {
+   "stop_pct": 0.45,
+   "trail_trigger": 0.5,
+   "trail_giveback": 0.35
+  },
+  "skipped_oversize": 22,
+  "fenced": {
+   "label": "fenced",
+   "n": 342,
+   "net": -245768,
+   "pf": 0.035,
+   "win_rate": 0.143,
+   "max_dd": -245967,
+   "n_windows": 26,
+   "pos_window_frac": 0.0,
+   "worst_window": -33115,
+   "avg_per_trade": -719
+  },
+  "reused_holdout": {
+   "label": "reused_holdout",
+   "n": 54,
+   "net": -66358,
+   "pf": 0.095,
+   "win_rate": 0.185,
+   "max_dd": -67419,
+   "n_windows": 5,
+   "pos_window_frac": 0.0,
+   "worst_window": -24088,
+   "avg_per_trade": -1229
+  },
+  "exit_mix": {
+   "stop": 76,
+   "trail": 34,
+   "square_off": 232
+  }
+ },
+ {
+  "config": {
+   "stop_pct": 0.45,
+   "trail_trigger": 0.7,
+   "trail_giveback": 0.35
+  },
+  "skipped_oversize": 22,
+  "fenced": {
+   "label": "fenced",
+   "n": 342,
+   "net": -250599,
+   "pf": 0.042,
+   "win_rate": 0.152,
+   "max_dd": -250798,
+   "n_windows": 26,
+   "pos_window_frac": 0.0,
+   "worst_window": -33115,
+   "avg_per_trade": -733
+  },
+  "reused_holdout": {
+   "label": "reused_holdout",
+   "n": 54,
+   "net": -67039,
+   "pf": 0.1,
+   "win_rate": 0.185,
+   "max_dd": -68100,
+   "n_windows": 5,
+   "pos_window_frac": 0.0,
+   "worst_window": -23315,
+   "avg_per_trade": -1241
+  },
+  "exit_mix": {
+   "stop": 86,
+   "trail": 17,
+   "square_off": 239
+  }
+ },
+ {
+  "config": {
+   "stop_pct": 0.45,
+   "trail_trigger": null,
+   "trail_giveback": 0.35
+  },
+  "skipped_oversize": 22,
+  "fenced": {
+   "label": "fenced",
+   "n": 342,
+   "net": -259018,
+   "pf": 0.038,
+   "win_rate": 0.114,
+   "max_dd": -259217,
+   "n_windows": 26,
+   "pos_window_frac": 0.0,
+   "worst_window": -33115,
+   "avg_per_trade": -757
+  },
+  "reused_holdout": {
+   "label": "reused_holdout",
+   "n": 54,
+   "net": -68655,
+   "pf": 0.094,
+   "win_rate": 0.167,
+   "max_dd": -69355,
+   "n_windows": 5,
+   "pos_window_frac": 0.0,
+   "worst_window": -23315,
+   "avg_per_trade": -1271
+  },
+  "exit_mix": {
+   "stop": 99,
+   "trail": 0,
+   "square_off": 243
+  }
+ },
+ {
+  "config": {
+   "stop_pct": 0.35,
+   "trail_trigger": 0.5,
+   "trail_giveback": 0.35
+  },
+  "skipped_oversize": 3,
+  "fenced": {
+   "label": "fenced",
+   "n": 355,
+   "net": -286037,
+   "pf": 0.029,
+   "win_rate": 0.127,
+   "max_dd": -286235,
+   "n_windows": 26,
+   "pos_window_frac": 0.0,
+   "worst_window": -41402,
+   "avg_per_trade": -806
+  },
+  "reused_holdout": {
+   "label": "reused_holdout",
+   "n": 60,
+   "net": -71555,
+   "pf": 0.1,
+   "win_rate": 0.2,
+   "max_dd": -72617,
+   "n_windows": 5,
+   "pos_window_frac": 0.0,
+   "worst_window": -24063,
+   "avg_per_trade": -1193
+  },
+  "exit_mix": {
+   "stop": 127,
+   "trail": 29,
+   "square_off": 199
+  }
+ },
+ {
+  "config": {
+   "stop_pct": 0.35,
+   "trail_trigger": 0.7,
+   "trail_giveback": 0.35
+  },
+  "skipped_oversize": 3,
+  "fenced": {
+   "label": "fenced",
+   "n": 355,
+   "net": -289586,
+   "pf": 0.034,
+   "win_rate": 0.132,
+   "max_dd": -289784,
+   "n_windows": 26,
+   "pos_window_frac": 0.0,
+   "worst_window": -42627,
+   "avg_per_trade": -816
+  },
+  "reused_holdout": {
+   "label": "reused_holdout",
+   "n": 60,
+   "net": -71983,
+   "pf": 0.106,
+   "win_rate": 0.2,
+   "max_dd": -73045,
+   "n_windows": 5,
+   "pos_window_frac": 0.0,
+   "worst_window": -23290,
+   "avg_per_trade": -1200
+  },
+  "exit_mix": {
+   "stop": 137,
+   "trail": 13,
+   "square_off": 205
+  }
+ },
+ {
+  "config": {
+   "stop_pct": 0.35,
+   "trail_trigger": null,
+   "trail_giveback": 0.35
+  },
+  "skipped_oversize": 3,
+  "fenced": {
+   "label": "fenced",
+   "n": 355,
+   "net": -294128,
+   "pf": 0.034,
+   "win_rate": 0.107,
+   "max_dd": -294327,
+   "n_windows": 26,
+   "pos_window_frac": 0.0,
+   "worst_window": -44052,
+   "avg_per_trade": -829
+  },
+  "reused_holdout": {
+   "label": "reused_holdout",
+   "n": 60,
+   "net": -73338,
+   "pf": 0.1,
+   "win_rate": 0.183,
+   "max_dd": -74038,
+   "n_windows": 5,
+   "pos_window_frac": 0.0,
+   "worst_window": -23290,
+   "avg_per_trade": -1222
+  },
+  "exit_mix": {
+   "stop": 146,
+   "trail": 0,
+   "square_off": 209
+  }
+ }
+]

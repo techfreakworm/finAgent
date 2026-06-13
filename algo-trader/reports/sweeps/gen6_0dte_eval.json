@@ -1,0 +1,210 @@
+[
+ {
+  "config": {
+   "entry_time": "09:20",
+   "stop_pct": 0.25,
+   "take_pct": null
+  },
+  "fenced": {
+   "label": "fenced",
+   "n": 218,
+   "net": 66056,
+   "pf": 1.466,
+   "win_rate": 0.394,
+   "max_dd": -13433,
+   "pos_window_frac": 0.692,
+   "worst_window": -5545,
+   "best_window": 17308,
+   "avg_per_trade": 303,
+   "worst_trade": -5106,
+   "n_windows": 26
+  },
+  "exit_mix": {
+   "stop": 125,
+   "take": 0,
+   "square_off": 93
+  }
+ },
+ {
+  "config": {
+   "entry_time": "10:15",
+   "stop_pct": 0.25,
+   "take_pct": null
+  },
+  "fenced": {
+   "label": "fenced",
+   "n": 218,
+   "net": 59456,
+   "pf": 1.487,
+   "win_rate": 0.404,
+   "max_dd": -22305,
+   "pos_window_frac": 0.731,
+   "worst_window": -15369,
+   "best_window": 11397,
+   "avg_per_trade": 273,
+   "worst_trade": -5831,
+   "n_windows": 26
+  },
+  "exit_mix": {
+   "stop": 124,
+   "take": 0,
+   "square_off": 94
+  }
+ },
+ {
+  "config": {
+   "entry_time": "10:15",
+   "stop_pct": 0.4,
+   "take_pct": null
+  },
+  "fenced": {
+   "label": "fenced",
+   "n": 218,
+   "net": 59165,
+   "pf": 1.391,
+   "win_rate": 0.495,
+   "max_dd": -15561,
+   "pos_window_frac": 0.577,
+   "worst_window": -4853,
+   "best_window": 12638,
+   "avg_per_trade": 271,
+   "worst_trade": -8899,
+   "n_windows": 26
+  },
+  "exit_mix": {
+   "stop": 92,
+   "take": 0,
+   "square_off": 126
+  }
+ },
+ {
+  "config": {
+   "entry_time": "09:20",
+   "stop_pct": 0.4,
+   "take_pct": null
+  },
+  "fenced": {
+   "label": "fenced",
+   "n": 218,
+   "net": 48705,
+   "pf": 1.267,
+   "win_rate": 0.459,
+   "max_dd": -19350,
+   "pos_window_frac": 0.577,
+   "worst_window": -5668,
+   "best_window": 10649,
+   "avg_per_trade": 223,
+   "worst_trade": -7793,
+   "n_windows": 26
+  },
+  "exit_mix": {
+   "stop": 102,
+   "take": 0,
+   "square_off": 116
+  }
+ },
+ {
+  "config": {
+   "entry_time": "09:20",
+   "stop_pct": 0.25,
+   "take_pct": 0.5
+  },
+  "fenced": {
+   "label": "fenced",
+   "n": 218,
+   "net": 43512,
+   "pf": 1.32,
+   "win_rate": 0.431,
+   "max_dd": -10632,
+   "pos_window_frac": 0.731,
+   "worst_window": -3453,
+   "best_window": 9803,
+   "avg_per_trade": 200,
+   "worst_trade": -5106,
+   "n_windows": 26
+  },
+  "exit_mix": {
+   "stop": 120,
+   "take": 78,
+   "square_off": 20
+  }
+ },
+ {
+  "config": {
+   "entry_time": "10:15",
+   "stop_pct": 0.4,
+   "take_pct": 0.5
+  },
+  "fenced": {
+   "label": "fenced",
+   "n": 218,
+   "net": 38921,
+   "pf": 1.275,
+   "win_rate": 0.528,
+   "max_dd": -14043,
+   "pos_window_frac": 0.538,
+   "worst_window": -5075,
+   "best_window": 12546,
+   "avg_per_trade": 179,
+   "worst_trade": -8899,
+   "n_windows": 26
+  },
+  "exit_mix": {
+   "stop": 88,
+   "take": 106,
+   "square_off": 24
+  }
+ },
+ {
+  "config": {
+   "entry_time": "10:15",
+   "stop_pct": 0.25,
+   "take_pct": 0.5
+  },
+  "fenced": {
+   "label": "fenced",
+   "n": 218,
+   "net": 35198,
+   "pf": 1.304,
+   "win_rate": 0.436,
+   "max_dd": -16264,
+   "pos_window_frac": 0.654,
+   "worst_window": -12512,
+   "best_window": 13708,
+   "avg_per_trade": 161,
+   "worst_trade": -5831,
+   "n_windows": 26
+  },
+  "exit_mix": {
+   "stop": 120,
+   "take": 91,
+   "square_off": 7
+  }
+ },
+ {
+  "config": {
+   "entry_time": "09:20",
+   "stop_pct": 0.4,
+   "take_pct": 0.5
+  },
+  "fenced": {
+   "label": "fenced",
+   "n": 218,
+   "net": 34936,
+   "pf": 1.204,
+   "win_rate": 0.505,
+   "max_dd": -18833,
+   "pos_window_frac": 0.577,
+   "worst_window": -5532,
+   "best_window": 6877,
+   "avg_per_trade": 160,
+   "worst_trade": -7793,
+   "n_windows": 26
+  },
+  "exit_mix": {
+   "stop": 99,
+   "take": 90,
+   "square_off": 29
+  }
+ }
+]

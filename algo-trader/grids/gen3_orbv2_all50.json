@@ -1,0 +1,24 @@
+{
+  "generation": 3,
+  "registered_at": "2026-06-12T05:10:00+05:30",
+  "interval": "5m",
+  "universe": "all50",
+  "period": {"from": "2021-06-14", "to": "2025-08-31"},
+  "holdout_fence": "2025-09-01",
+  "notes": [
+    "Pre-registered HYPOTHESIS TEST, not a parameter search: take the two best Gen-2a ORB-v2 cells unchanged and run the FULL 50-stock universe.",
+    "H: per-symbol WF/OOS net correlates positively with the symbol's realized daily-range percentile (TATAMOTORS being top-decile vol is the source of its repeated wins, not luck).",
+    "If confirmed -> universe rule: top-vol-quintile names, refreshed quarterly, point-in-time. If TATAMOTORS is an outlier within its vol class -> luck; discard the cell."
+  ],
+  "strategies": {
+    "orb_v2": {
+      "class": "algotrader.strategies.orb_v2.OrbV2",
+      "grid": {
+        "range_minutes": [30],
+        "range_max_atr_frac": [0.25],
+        "gap_align": [true],
+        "trail_atr_mult": [2.0, 3.0]
+      }
+    }
+  }
+}

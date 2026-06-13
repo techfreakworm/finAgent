@@ -1,0 +1,23 @@
+{
+  "generation": 2,
+  "registered_at": "2026-06-12T03:55:00+05:30",
+  "interval": "5m",
+  "period": {"from": "2021-06-14", "to": "2025-08-31"},
+  "holdout_fence": "2025-09-01",
+  "notes": [
+    "Pre-registered before any OOS evaluation. Gen-2a: ORB v2 selectivity+trail redesign.",
+    "Design rationale from Gen-1 evidence (see reports/sweeps/gen1_eval.json): attack trade frequency and exit quality on the one strategy family that was nearly breakeven gross of friction.",
+    "Fixed (not swept, to cap trials): vol_confirm_mult=1.5, be_at_r=1.0, entry_cutoff=11:30, one trade/session."
+  ],
+  "strategies": {
+    "orb_v2": {
+      "class": "algotrader.strategies.orb_v2.OrbV2",
+      "grid": {
+        "range_minutes": [15, 30],
+        "range_max_atr_frac": [0.25, 0.5],
+        "gap_align": [true, false],
+        "trail_atr_mult": [2.0, 3.0]
+      }
+    }
+  }
+}

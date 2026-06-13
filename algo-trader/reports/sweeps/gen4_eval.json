@@ -1,0 +1,360 @@
+{
+ "aggregate": [
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "decision_time": "09:50",
+    "fresh_cross": false,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5,
+    "window_end": "12:00"
+   },
+   "n_trades": 778,
+   "net": 18368.0,
+   "pf": 1.013,
+   "pf_ci_lo": 0.825,
+   "win_rate": 0.357,
+   "max_dd": -106155.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.5,
+   "worst_window": -63635.0,
+   "best_window": 83346.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "decision_time": "09:50",
+    "fresh_cross": false,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0,
+    "window_end": "12:00"
+   },
+   "n_trades": 778,
+   "net": 9585.0,
+   "pf": 1.007,
+   "pf_ci_lo": 0.822,
+   "win_rate": 0.361,
+   "max_dd": -116864.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.5,
+   "worst_window": -62410.0,
+   "best_window": 87119.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.7,
+    "decision_time": "09:50",
+    "fresh_cross": false,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5,
+    "window_end": "12:00"
+   },
+   "n_trades": 913,
+   "net": -46319.0,
+   "pf": 0.972,
+   "pf_ci_lo": 0.809,
+   "win_rate": 0.352,
+   "max_dd": -166425.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -60091.0,
+   "best_window": 65767.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.7,
+    "decision_time": "09:50",
+    "fresh_cross": false,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0,
+    "window_end": "12:00"
+   },
+   "n_trades": 913,
+   "net": -60119.0,
+   "pf": 0.961,
+   "pf_ci_lo": 0.81,
+   "win_rate": 0.355,
+   "max_dd": -167858.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -74988.0,
+   "best_window": 59668.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "decision_time": "09:50",
+    "fresh_cross": true,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0,
+    "window_end": "12:00"
+   },
+   "n_trades": 717,
+   "net": -66893.0,
+   "pf": 0.945,
+   "pf_ci_lo": 0.762,
+   "win_rate": 0.356,
+   "max_dd": -194700.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.423,
+   "worst_window": -69645.0,
+   "best_window": 74039.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "decision_time": "09:50",
+    "fresh_cross": true,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5,
+    "window_end": "12:00"
+   },
+   "n_trades": 717,
+   "net": -72958.0,
+   "pf": 0.944,
+   "pf_ci_lo": 0.758,
+   "win_rate": 0.35,
+   "max_dd": -192185.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.462,
+   "worst_window": -56864.0,
+   "best_window": 71475.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.7,
+    "decision_time": "09:50",
+    "fresh_cross": true,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0,
+    "window_end": "12:00"
+   },
+   "n_trades": 844,
+   "net": -155403.0,
+   "pf": 0.895,
+   "pf_ci_lo": 0.738,
+   "win_rate": 0.346,
+   "max_dd": -221806.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.462,
+   "worst_window": -84636.0,
+   "best_window": 59128.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.7,
+    "decision_time": "09:50",
+    "fresh_cross": true,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5,
+    "window_end": "12:00"
+   },
+   "n_trades": 844,
+   "net": -155458.0,
+   "pf": 0.9,
+   "pf_ci_lo": 0.738,
+   "win_rate": 0.346,
+   "max_dd": -220035.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.308,
+   "worst_window": -68078.0,
+   "best_window": 64788.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "decision_time": "09:50",
+    "fresh_cross": false,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0,
+    "window_end": "13:30"
+   },
+   "n_trades": 944,
+   "net": -186349.0,
+   "pf": 0.889,
+   "pf_ci_lo": 0.739,
+   "win_rate": 0.344,
+   "max_dd": -239501.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.308,
+   "worst_window": -85583.0,
+   "best_window": 89960.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "decision_time": "09:50",
+    "fresh_cross": false,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5,
+    "window_end": "13:30"
+   },
+   "n_trades": 944,
+   "net": -197477.0,
+   "pf": 0.889,
+   "pf_ci_lo": 0.74,
+   "win_rate": 0.338,
+   "max_dd": -222928.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.269,
+   "worst_window": -88981.0,
+   "best_window": 85149.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.7,
+    "decision_time": "09:50",
+    "fresh_cross": false,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0,
+    "window_end": "13:30"
+   },
+   "n_trades": 1068,
+   "net": -199707.0,
+   "pf": 0.894,
+   "pf_ci_lo": 0.756,
+   "win_rate": 0.346,
+   "max_dd": -237992.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -93508.0,
+   "best_window": 62509.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.7,
+    "decision_time": "09:50",
+    "fresh_cross": false,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5,
+    "window_end": "13:30"
+   },
+   "n_trades": 1068,
+   "net": -204927.0,
+   "pf": 0.897,
+   "pf_ci_lo": 0.758,
+   "win_rate": 0.341,
+   "max_dd": -257350.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -90503.0,
+   "best_window": 67569.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "decision_time": "09:50",
+    "fresh_cross": true,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0,
+    "window_end": "13:30"
+   },
+   "n_trades": 902,
+   "net": -254627.0,
+   "pf": 0.846,
+   "pf_ci_lo": 0.705,
+   "win_rate": 0.339,
+   "max_dd": -305527.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -87036.0,
+   "best_window": 74549.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "decision_time": "09:50",
+    "fresh_cross": true,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5,
+    "window_end": "13:30"
+   },
+   "n_trades": 902,
+   "net": -287380.0,
+   "pf": 0.836,
+   "pf_ci_lo": 0.692,
+   "win_rate": 0.331,
+   "max_dd": -309988.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.346,
+   "worst_window": -91127.0,
+   "best_window": 69689.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.7,
+    "decision_time": "09:50",
+    "fresh_cross": true,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0,
+    "window_end": "13:30"
+   },
+   "n_trades": 1026,
+   "net": -311188.0,
+   "pf": 0.834,
+   "pf_ci_lo": 0.705,
+   "win_rate": 0.339,
+   "max_dd": -332623.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.308,
+   "worst_window": -114314.0,
+   "best_window": 51636.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.7,
+    "decision_time": "09:50",
+    "fresh_cross": true,
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5,
+    "window_end": "13:30"
+   },
+   "n_trades": 1026,
+   "net": -333122.0,
+   "pf": 0.832,
+   "pf_ci_lo": 0.694,
+   "win_rate": 0.336,
+   "max_dd": -350779.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.308,
+   "worst_window": -96803.0,
+   "best_window": 68266.0
+  }
+ ],
+ "walk_forward_selection": [
+  {
+   "strategy": "breadth_rider",
+   "symbol": "BANKNIFTY",
+   "wf_oos_net": 35333.0,
+   "wf_n_windows": 21,
+   "wf_pos_frac": 0.571,
+   "wf_worst_window": -24233.0,
+   "n_distinct_picks": 7
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "NIFTY",
+   "wf_oos_net": -21524.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.5,
+   "wf_worst_window": -40431.0,
+   "n_distinct_picks": 7
+  }
+ ]
+}

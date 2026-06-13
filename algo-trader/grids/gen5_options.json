@@ -1,0 +1,16 @@
+{
+  "generation": 5,
+  "registered_at": "2026-06-12T07:45:00+05:30",
+  "notes": [
+    "Pre-registered. OPTIONS EXPRESSION of the FROZEN breadth signal (thr 0.72 @ 10:15, signal definition unchanged from pre-holdout registry entry).",
+    "Mechanics per trade: buy 1 lot ATM weekly NIFTY CE (long days) / PE (short days) at the 10:15 1-min close +1% slippage; stop at -stop_pct of entry premium; optional trail: after premium reaches +trail_trigger, exit if it gives back trail_giveback from the running max; hard square-off at 15:15 close -1% slippage. Dhan options costs (date-banded STT incl. 2026-04 hike).",
+    "Sizing: 1 lot point-in-time; risk per trade = stop_pct x premium x lot (~Rs2.5-4k, within the 0.75% budget on typical premiums; days where it exceeds 1.2% of capital are SKIPPED and counted).",
+    "CONTAMINATION DISCLOSURE: signal dates 2025-09+ were already seen once by the futures-expression holdout run. Primary evaluation = fenced segment (<=2025-08-31). The 2025-09+ segment is reported separately as 'reused holdout' — informative, not confirmatory.",
+    "Evidence bar (fenced): >=250 trades, PF >= 1.25, posW >= 55% by 2-month windows, worst window > -3% capital, survives doubling slippage to 2%."
+  ],
+  "grid": {
+    "stop_pct": [0.35, 0.45],
+    "trail_trigger": [0.5, 0.7, null],
+    "trail_giveback": [0.35]
+  }
+}

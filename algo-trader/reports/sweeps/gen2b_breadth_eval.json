@@ -1,0 +1,258 @@
+{
+ "aggregate": [
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 2423,
+   "net": -397416.0,
+   "pf": 0.9,
+   "pf_ci_lo": 0.805,
+   "win_rate": 0.387,
+   "max_dd": -573478.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.423,
+   "worst_window": -146711.0,
+   "best_window": 199248.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 2.5
+   },
+   "n_trades": 2423,
+   "net": -431333.0,
+   "pf": 0.873,
+   "pf_ci_lo": 0.779,
+   "win_rate": 0.381,
+   "max_dd": -517329.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.462,
+   "worst_window": -138829.0,
+   "best_window": 141581.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.85,
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 2.5
+   },
+   "n_trades": 789,
+   "net": -453211.0,
+   "pf": 0.627,
+   "pf_ci_lo": 0.5,
+   "win_rate": 0.312,
+   "max_dd": -471744.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.192,
+   "worst_window": -95580.0,
+   "best_window": 143774.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.85,
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 789,
+   "net": -499818.0,
+   "pf": 0.651,
+   "pf_ci_lo": 0.526,
+   "win_rate": 0.321,
+   "max_dd": -524224.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.231,
+   "worst_window": -116540.0,
+   "best_window": 198496.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "stop_atr_mult": 1.5,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 2481,
+   "net": -625942.0,
+   "pf": 0.896,
+   "pf_ci_lo": 0.804,
+   "win_rate": 0.323,
+   "max_dd": -869277.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.423,
+   "worst_window": -184412.0,
+   "best_window": 328332.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.75,
+    "stop_atr_mult": 1.5,
+    "trail_atr_mult": 2.5
+   },
+   "n_trades": 2481,
+   "net": -680600.0,
+   "pf": 0.873,
+   "pf_ci_lo": 0.781,
+   "win_rate": 0.345,
+   "max_dd": -795837.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.462,
+   "worst_window": -188385.0,
+   "best_window": 249169.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.85,
+    "stop_atr_mult": 1.5,
+    "trail_atr_mult": 2.5
+   },
+   "n_trades": 804,
+   "net": -779521.0,
+   "pf": 0.592,
+   "pf_ci_lo": 0.467,
+   "win_rate": 0.276,
+   "max_dd": -800369.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.154,
+   "worst_window": -142894.0,
+   "best_window": 212083.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.85,
+    "stop_atr_mult": 1.5,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 804,
+   "net": -816567.0,
+   "pf": 0.619,
+   "pf_ci_lo": 0.49,
+   "win_rate": 0.255,
+   "max_dd": -846341.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.154,
+   "worst_window": -174004.0,
+   "best_window": 280463.0
+  }
+ ],
+ "walk_forward_selection": [
+  {
+   "strategy": "breadth_rider",
+   "symbol": "BANKNIFTY",
+   "wf_oos_net": 62471.0,
+   "wf_n_windows": 21,
+   "wf_pos_frac": 0.333,
+   "wf_worst_window": -12171.0,
+   "n_distinct_picks": 5
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "AXISBANK",
+   "wf_oos_net": 36658.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.364,
+   "wf_worst_window": -9169.0,
+   "n_distinct_picks": 7
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "NIFTY",
+   "wf_oos_net": 29392.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.591,
+   "wf_worst_window": -11476.0,
+   "n_distinct_picks": 6
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "TCS",
+   "wf_oos_net": 14772.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.364,
+   "wf_worst_window": -20159.0,
+   "n_distinct_picks": 6
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "TATAMOTORS",
+   "wf_oos_net": 3574.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.455,
+   "wf_worst_window": -28071.0,
+   "n_distinct_picks": 8
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "SBIN",
+   "wf_oos_net": -4715.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.364,
+   "wf_worst_window": -18479.0,
+   "n_distinct_picks": 6
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "RELIANCE",
+   "wf_oos_net": -42654.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.318,
+   "wf_worst_window": -18435.0,
+   "n_distinct_picks": 5
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "LT",
+   "wf_oos_net": -45904.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.318,
+   "wf_worst_window": -14152.0,
+   "n_distinct_picks": 7
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "ICICIBANK",
+   "wf_oos_net": -81239.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.227,
+   "wf_worst_window": -13926.0,
+   "n_distinct_picks": 6
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "KOTAKBANK",
+   "wf_oos_net": -101998.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.227,
+   "wf_worst_window": -31965.0,
+   "n_distinct_picks": 6
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "HDFCBANK",
+   "wf_oos_net": -119799.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.318,
+   "wf_worst_window": -39835.0,
+   "n_distinct_picks": 5
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "INFY",
+   "wf_oos_net": -137145.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.227,
+   "wf_worst_window": -21290.0,
+   "n_distinct_picks": 7
+  }
+ ]
+}

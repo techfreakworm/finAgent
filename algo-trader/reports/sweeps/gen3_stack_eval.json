@@ -1,0 +1,154 @@
+{
+ "aggregate": [
+  {
+   "strategy": "orb_v2",
+   "config": {
+    "breadth_min_abs": 0.4,
+    "gap_align": true,
+    "range_max_atr_frac": 0.25,
+    "range_minutes": 30,
+    "trail_atr_mult": 2.0
+   },
+   "n_trades": 253,
+   "net": -62174.0,
+   "pf": 0.871,
+   "pf_ci_lo": 0.624,
+   "win_rate": 0.455,
+   "max_dd": -139426.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.423,
+   "worst_window": -37031.0,
+   "best_window": 23924.0
+  },
+  {
+   "strategy": "orb_v2",
+   "config": {
+    "breadth_min_abs": 0.2,
+    "gap_align": true,
+    "range_max_atr_frac": 0.25,
+    "range_minutes": 30,
+    "trail_atr_mult": 2.0
+   },
+   "n_trades": 390,
+   "net": -136471.0,
+   "pf": 0.827,
+   "pf_ci_lo": 0.618,
+   "win_rate": 0.431,
+   "max_dd": -215743.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -69862.0,
+   "best_window": 39357.0
+  }
+ ],
+ "walk_forward_selection": [
+  {
+   "strategy": "orb_v2",
+   "symbol": "SBIN",
+   "wf_oos_net": 12331.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.318,
+   "wf_worst_window": -8231.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "LT",
+   "wf_oos_net": 11905.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.364,
+   "wf_worst_window": -4629.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "TATAMOTORS",
+   "wf_oos_net": 3724.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.182,
+   "wf_worst_window": -4552.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "INFY",
+   "wf_oos_net": -650.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.227,
+   "wf_worst_window": -9251.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "ICICIBANK",
+   "wf_oos_net": -3840.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.136,
+   "wf_worst_window": -8014.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "KOTAKBANK",
+   "wf_oos_net": -11229.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.227,
+   "wf_worst_window": -12721.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "BANKNIFTY",
+   "wf_oos_net": -12763.0,
+   "wf_n_windows": 21,
+   "wf_pos_frac": 0.381,
+   "wf_worst_window": -8100.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "NIFTY",
+   "wf_oos_net": -13812.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.136,
+   "wf_worst_window": -11307.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "HDFCBANK",
+   "wf_oos_net": -16845.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.182,
+   "wf_worst_window": -12453.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "TCS",
+   "wf_oos_net": -19159.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.045,
+   "wf_worst_window": -4472.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "AXISBANK",
+   "wf_oos_net": -37234.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.136,
+   "wf_worst_window": -8575.0,
+   "n_distinct_picks": 2
+  },
+  {
+   "strategy": "orb_v2",
+   "symbol": "RELIANCE",
+   "wf_oos_net": -38592.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.091,
+   "wf_worst_window": -8690.0,
+   "n_distinct_picks": 2
+  }
+ ]
+}

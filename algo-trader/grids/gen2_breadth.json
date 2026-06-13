@@ -1,0 +1,22 @@
+{
+  "generation": 2,
+  "registered_at": "2026-06-12T04:05:00+05:30",
+  "interval": "5m",
+  "period": {"from": "2021-06-14", "to": "2025-08-31"},
+  "holdout_fence": "2025-09-01",
+  "notes": [
+    "Pre-registered before any OOS evaluation. Gen-2b: breadth trend-day rider.",
+    "Breadth gate from causal 50-stock internals (data/cache/_BREADTH); entry only when internals one-sided at 10:15 AND own price agrees with own session VWAP side.",
+    "Fixed: decision_time=10:15, min_stocks=30, one trade/session/symbol."
+  ],
+  "strategies": {
+    "breadth_rider": {
+      "class": "algotrader.strategies.breadth_rider.BreadthRider",
+      "grid": {
+        "breadth_thr": [0.75, 0.85],
+        "stop_atr_mult": [1.5, 2.5],
+        "trail_atr_mult": [2.5, 3.5]
+      }
+    }
+  }
+}

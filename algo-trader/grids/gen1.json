@@ -1,0 +1,40 @@
+{
+  "generation": 1,
+  "registered_at": "2026-06-12T02:45:00+05:30",
+  "interval": "5m",
+  "period": {"from": "2021-06-14", "to": "2025-08-31"},
+  "holdout_fence": "2025-09-01",
+  "notes": [
+    "Pre-registered BEFORE any OOS evaluation per ARCHITECTURE 3.6.",
+    "Known contamination: ORB default config was smoke-tested on RELIANCE/HDFCBANK Jun-Dec 2025 (overlaps holdout) before the fence was activated - one untuned config, no selection pressure; logged here for honesty.",
+    "Index configs run on INDEX bars with FUTURES costs/lots (basis caveat in data_source.py).",
+    "Expect 0-lot rejections on index futures at 0.75% risk / Rs5L capital - measured, not hidden."
+  ],
+  "strategies": {
+    "orb": {
+      "class": "algotrader.strategies.orb.OpeningRangeBreakout",
+      "grid": {
+        "range_minutes": [15, 30],
+        "vol_confirm_mult": [1.0, 1.5],
+        "target_r_mult": [1.5, 2.5],
+        "stop": ["range_mid", "range_opposite"]
+      }
+    },
+    "vwap_reversion": {
+      "class": "algotrader.strategies.vwap_reversion.VwapReversion",
+      "grid": {
+        "k_sigma": [1.5, 2.0, 2.5],
+        "adx_max": [18.0, 25.0],
+        "time_stop_min": [45, 90]
+      }
+    },
+    "trend_continuation": {
+      "class": "algotrader.strategies.trend_continuation.TrendContinuation",
+      "grid": {
+        "adx_floor": [20.0, 25.0],
+        "pullback_pct": [0.002, 0.004],
+        "atr_trail_mult": [1.5, 2.5]
+      }
+    }
+  }
+}

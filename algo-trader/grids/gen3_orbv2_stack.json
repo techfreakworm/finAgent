@@ -1,0 +1,24 @@
+{
+  "generation": 3,
+  "registered_at": "2026-06-12T05:10:00+05:30",
+  "interval": "5m",
+  "universe": "sweep12",
+  "period": {"from": "2021-06-14", "to": "2025-08-31"},
+  "holdout_fence": "2025-09-01",
+  "notes": [
+    "Pre-registered. Gate-stack probe: best ORB-v2 cell + 50-stock breadth alignment (break direction must agree with net_breadth, |net| >= threshold).",
+    "H: internals-confirmed breakouts have higher expectancy; trade count will drop further (compounding gates)."
+  ],
+  "strategies": {
+    "orb_v2": {
+      "class": "algotrader.strategies.orb_v2.OrbV2",
+      "grid": {
+        "range_minutes": [30],
+        "range_max_atr_frac": [0.25],
+        "gap_align": [true],
+        "trail_atr_mult": [2.0],
+        "breadth_min_abs": [0.2, 0.4]
+      }
+    }
+  }
+}

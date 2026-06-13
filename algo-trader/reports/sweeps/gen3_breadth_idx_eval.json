@@ -1,0 +1,480 @@
+{
+ "aggregate": [
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:15",
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 305,
+   "net": 148612.0,
+   "pf": 1.317,
+   "pf_ci_lo": 0.959,
+   "win_rate": 0.393,
+   "max_dd": -60813.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.577,
+   "worst_window": -25963.0,
+   "best_window": 55565.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:15",
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 305,
+   "net": 140039.0,
+   "pf": 1.32,
+   "pf_ci_lo": 0.953,
+   "win_rate": 0.407,
+   "max_dd": -55322.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.462,
+   "worst_window": -24497.0,
+   "best_window": 61258.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:15",
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 271,
+   "net": 63708.0,
+   "pf": 1.194,
+   "pf_ci_lo": 0.859,
+   "win_rate": 0.439,
+   "max_dd": -51621.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -17965.0,
+   "best_window": 40540.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:15",
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 217,
+   "net": 63454.0,
+   "pf": 1.193,
+   "pf_ci_lo": 0.81,
+   "win_rate": 0.387,
+   "max_dd": -67702.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -24407.0,
+   "best_window": 76949.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:15",
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 271,
+   "net": 61887.0,
+   "pf": 1.175,
+   "pf_ci_lo": 0.842,
+   "win_rate": 0.421,
+   "max_dd": -49586.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.462,
+   "worst_window": -19843.0,
+   "best_window": 35932.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:15",
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 217,
+   "net": 50836.0,
+   "pf": 1.144,
+   "pf_ci_lo": 0.78,
+   "win_rate": 0.369,
+   "max_dd": -73658.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -25873.0,
+   "best_window": 72352.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:15",
+    "stop_atr_mult": 3.0,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 227,
+   "net": 50209.0,
+   "pf": 1.219,
+   "pf_ci_lo": 0.854,
+   "win_rate": 0.436,
+   "max_dd": -33910.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.346,
+   "worst_window": -15418.0,
+   "best_window": 30882.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:45",
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 301,
+   "net": 47696.0,
+   "pf": 1.091,
+   "pf_ci_lo": 0.775,
+   "win_rate": 0.322,
+   "max_dd": -87787.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.269,
+   "worst_window": -29338.0,
+   "best_window": 61900.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:15",
+    "stop_atr_mult": 3.0,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 227,
+   "net": 47399.0,
+   "pf": 1.19,
+   "pf_ci_lo": 0.852,
+   "win_rate": 0.419,
+   "max_dd": -32838.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.423,
+   "worst_window": -17217.0,
+   "best_window": 26317.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:45",
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 190,
+   "net": 40464.0,
+   "pf": 1.122,
+   "pf_ci_lo": 0.762,
+   "win_rate": 0.332,
+   "max_dd": -51525.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -24782.0,
+   "best_window": 39987.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:15",
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 192,
+   "net": 34994.0,
+   "pf": 1.143,
+   "pf_ci_lo": 0.734,
+   "win_rate": 0.422,
+   "max_dd": -44364.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -16188.0,
+   "best_window": 54481.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:45",
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 277,
+   "net": 33524.0,
+   "pf": 1.085,
+   "pf_ci_lo": 0.8,
+   "win_rate": 0.35,
+   "max_dd": -52037.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.269,
+   "worst_window": -26466.0,
+   "best_window": 50710.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:15",
+    "stop_atr_mult": 3.0,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 160,
+   "net": 31130.0,
+   "pf": 1.188,
+   "pf_ci_lo": 0.785,
+   "win_rate": 0.419,
+   "max_dd": -26709.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.308,
+   "worst_window": -15986.0,
+   "best_window": 40989.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:45",
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 277,
+   "net": 27040.0,
+   "pf": 1.073,
+   "pf_ci_lo": 0.775,
+   "win_rate": 0.354,
+   "max_dd": -70592.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.231,
+   "worst_window": -22886.0,
+   "best_window": 52187.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:15",
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 192,
+   "net": 25984.0,
+   "pf": 1.098,
+   "pf_ci_lo": 0.711,
+   "win_rate": 0.396,
+   "max_dd": -48391.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.346,
+   "worst_window": -16877.0,
+   "best_window": 51121.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:45",
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 170,
+   "net": 24994.0,
+   "pf": 1.102,
+   "pf_ci_lo": 0.722,
+   "win_rate": 0.359,
+   "max_dd": -40476.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.423,
+   "worst_window": -22413.0,
+   "best_window": 46571.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:45",
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 190,
+   "net": 24935.0,
+   "pf": 1.08,
+   "pf_ci_lo": 0.725,
+   "win_rate": 0.332,
+   "max_dd": -55829.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.385,
+   "worst_window": -22968.0,
+   "best_window": 46298.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:45",
+    "stop_atr_mult": 2.0,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 301,
+   "net": 22698.0,
+   "pf": 1.046,
+   "pf_ci_lo": 0.738,
+   "win_rate": 0.329,
+   "max_dd": -90630.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.346,
+   "worst_window": -26244.0,
+   "best_window": 66433.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:15",
+    "stop_atr_mult": 3.0,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 160,
+   "net": 21553.0,
+   "pf": 1.118,
+   "pf_ci_lo": 0.732,
+   "win_rate": 0.394,
+   "max_dd": -33437.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.346,
+   "worst_window": -17785.0,
+   "best_window": 40511.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:45",
+    "stop_atr_mult": 2.5,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 170,
+   "net": 19972.0,
+   "pf": 1.086,
+   "pf_ci_lo": 0.699,
+   "win_rate": 0.353,
+   "max_dd": -44237.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.308,
+   "worst_window": -20009.0,
+   "best_window": 49454.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:45",
+    "stop_atr_mult": 3.0,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 150,
+   "net": -5876.0,
+   "pf": 0.968,
+   "pf_ci_lo": 0.607,
+   "win_rate": 0.353,
+   "max_dd": -51102.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.231,
+   "worst_window": -17560.0,
+   "best_window": 31515.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.78,
+    "decision_time": "10:45",
+    "stop_atr_mult": 3.0,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 150,
+   "net": -7149.0,
+   "pf": 0.964,
+   "pf_ci_lo": 0.609,
+   "win_rate": 0.347,
+   "max_dd": -54378.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.269,
+   "worst_window": -19229.0,
+   "best_window": 28632.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:45",
+    "stop_atr_mult": 3.0,
+    "trail_atr_mult": 3.0
+   },
+   "n_trades": 251,
+   "net": -13041.0,
+   "pf": 0.956,
+   "pf_ci_lo": 0.669,
+   "win_rate": 0.355,
+   "max_dd": -72878.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.269,
+   "worst_window": -20758.0,
+   "best_window": 34718.0
+  },
+  {
+   "strategy": "breadth_rider",
+   "config": {
+    "breadth_thr": 0.72,
+    "decision_time": "10:45",
+    "stop_atr_mult": 3.0,
+    "trail_atr_mult": 3.5
+   },
+   "n_trades": 251,
+   "net": -13690.0,
+   "pf": 0.958,
+   "pf_ci_lo": 0.679,
+   "win_rate": 0.343,
+   "max_dd": -64148.0,
+   "n_windows": 26,
+   "pos_window_frac": 0.346,
+   "worst_window": -23604.0,
+   "best_window": 33509.0
+  }
+ ],
+ "walk_forward_selection": [
+  {
+   "strategy": "breadth_rider",
+   "symbol": "NIFTY",
+   "wf_oos_net": 103936.0,
+   "wf_n_windows": 22,
+   "wf_pos_frac": 0.591,
+   "wf_worst_window": -9666.0,
+   "n_distinct_picks": 9
+  },
+  {
+   "strategy": "breadth_rider",
+   "symbol": "BANKNIFTY",
+   "wf_oos_net": 33340.0,
+   "wf_n_windows": 21,
+   "wf_pos_frac": 0.429,
+   "wf_worst_window": -15433.0,
+   "n_distinct_picks": 7
+  }
+ ]
+}

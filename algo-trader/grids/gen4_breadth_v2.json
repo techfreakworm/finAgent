@@ -1,0 +1,27 @@
+{
+  "generation": 4,
+  "registered_at": "2026-06-12T06:20:00+05:30",
+  "interval": "5m",
+  "universe": "indices",
+  "period": {"from": "2021-06-14", "to": "2025-08-31"},
+  "holdout_fence": "2025-09-01",
+  "notes": [
+    "Pre-registered. Gen-3 left ONE live family: index continuation gated by 50-stock internals (best cell +149k/PF 1.32/posW 58%, WF NIFTY +104k BN +33k) — under-evidenced at 305 trades vs the 600-trade/CI-lo>1.0 gate.",
+    "Gen-4 raises trade count from the SAME signal: continuous entry window (first extreme breadth in [start,end], optional fresh-crossing) instead of one 10:15 snapshot. NOT a loosening of the signal definition.",
+    "Anchored params from Gen-3 winners: stop 2.0, trail in {3.0,3.5}. Window start 09:50 (allow earliest detection once ~7 bars exist), thr around 0.72 winner.",
+    "EVIDENCE BAR for candidate freeze (pre-registered): pooled >= 600 trades, PF CI-lo > 1.0, posW >= 55%, worst window > -3% capital, survives +50% slippage stress. Then ONE holdout shot."
+  ],
+  "strategies": {
+    "breadth_rider": {
+      "class": "algotrader.strategies.breadth_rider.BreadthRider",
+      "grid": {
+        "breadth_thr": [0.70, 0.75],
+        "decision_time": ["09:50"],
+        "window_end": ["12:00", "13:30"],
+        "fresh_cross": [true, false],
+        "stop_atr_mult": [2.0],
+        "trail_atr_mult": [3.0, 3.5]
+      }
+    }
+  }
+}
