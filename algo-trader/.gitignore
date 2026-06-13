@@ -1,0 +1,35 @@
+# Secrets — never commit
+.env
+*.env
+!.env.example
+
+# Virtualenv / caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Market data (large, regenerable)
+data/cache/
+data/instruments/*.csv
+*.parquet
+
+# Generated reports (published via soma-publish, not git)
+reports/*.html
+reports/*.png
+
+# paper-trading runtime state — never in git
+data/paper*.db
+data/paper/
+reports/daily/
+
+# Raw books — never commit copyrighted sources (distilled notes in docs/books are fine)
+*.pdf
+*.epub
+# Staging inbox where raw books are dropped (outside repo, but defensive)
+inbox/
+# Playwright MCP runtime snapshots
+.playwright-mcp/
+# Raw per-task walk-forward sweep outputs (regenerable research intermediates;
+# the aggregated *_eval.json summaries + campaign report ARE committed)
+reports/sweeps/gen*/

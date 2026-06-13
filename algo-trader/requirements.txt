@@ -1,0 +1,23 @@
+# Core
+dhanhq>=2.0.2          # DhanHQ v2 SDK — market data + (later, gated) orders
+pandas>=2.2
+numpy>=1.26
+pyarrow>=16.0          # parquet cache for intraday candles
+python-dotenv>=1.0
+requests>=2.32
+
+# Analysis / indicators
+ta>=0.11               # RSI/EMA/MACD/ATR etc. (validated in finAgent)
+scipy>=1.13
+
+# Scheduling / runtime
+APScheduler>=3.10
+websocket-client>=1.8  # dhan live feed fallback
+pytz>=2024.1
+
+# Reporting
+matplotlib>=3.9        # equity curves in EOD report
+tabulate>=0.9
+
+# Tests
+pytest>=8.0
