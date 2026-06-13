@@ -1,0 +1,107 @@
+{
+ "adversarial_fill": {
+  "slip_1x": {
+   "n": 218,
+   "net": 66056,
+   "pf": 1.466,
+   "win_rate": 0.394,
+   "stop_fire_rate": 0.573,
+   "pos_window_frac": 0.692,
+   "worst_window": -5545,
+   "max_dd": -13433,
+   "avg_per_trade": 303
+  },
+  "slip_2x": {
+   "n": 218,
+   "net": 40648,
+   "pf": 1.251,
+   "win_rate": 0.394,
+   "stop_fire_rate": 0.573,
+   "pos_window_frac": 0.538,
+   "worst_window": -6875,
+   "max_dd": -16510,
+   "avg_per_trade": 186
+  },
+  "slip_3x": {
+   "n": 218,
+   "net": 15239,
+   "pf": 1.084,
+   "win_rate": 0.394,
+   "stop_fire_rate": 0.573,
+   "pos_window_frac": 0.385,
+   "worst_window": -8205,
+   "max_dd": -20678,
+   "avg_per_trade": 70
+  }
+ },
+ "stop_design_2x": {
+  "no_stop": {
+   "n": 218,
+   "net": -37087,
+   "pf": 0.875,
+   "win_rate": 0.555,
+   "stop_fire_rate": 0.0,
+   "pos_window_frac": 0.462,
+   "worst_window": -21387,
+   "max_dd": -53665,
+   "avg_per_trade": -170
+  },
+  "25pct": {
+   "n": 218,
+   "net": 40648,
+   "pf": 1.251,
+   "win_rate": 0.394,
+   "stop_fire_rate": 0.573,
+   "pos_window_frac": 0.538,
+   "worst_window": -6875,
+   "max_dd": -16510,
+   "avg_per_trade": 186
+  },
+  "40pct": {
+   "n": 218,
+   "net": 23811,
+   "pf": 1.118,
+   "win_rate": 0.454,
+   "stop_fire_rate": 0.468,
+   "pos_window_frac": 0.538,
+   "worst_window": -6658,
+   "max_dd": -22255,
+   "avg_per_trade": 109
+  },
+  "60pct": {
+   "n": 218,
+   "net": -6454,
+   "pf": 0.973,
+   "win_rate": 0.495,
+   "stop_fire_rate": 0.376,
+   "pos_window_frac": 0.462,
+   "worst_window": -9253,
+   "max_dd": -31910,
+   "avg_per_trade": -30
+  }
+ },
+ "vix_regime": {
+  "vix_terciles": {
+   "lo<=": 13.53,
+   "hi>": 16.48
+  },
+  "low": {
+   "n": 70,
+   "stop_fire_rate": 0.586,
+   "net": -3147,
+   "avg": -45
+  },
+  "mid": {
+   "n": 67,
+   "stop_fire_rate": 0.507,
+   "net": 37436,
+   "avg": 559
+  },
+  "high": {
+   "n": 68,
+   "stop_fire_rate": 0.603,
+   "net": 33613,
+   "avg": 494
+  }
+ }
+}

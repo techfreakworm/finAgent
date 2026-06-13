@@ -1,0 +1,20 @@
+{
+  "generation": 8,
+  "registered_at": "2026-06-13T14:30:00+05:30",
+  "notes": [
+    "Pre-registered from books pass-2 audit (reports/gen7_0dte_audit.json). Refines the FROZEN 0DTE straddle (entry 09:20, 25% straddle stop, flat 15:10) with regime/VRP entry gates. The base cell is unchanged; these are SKIP filters.",
+    "Evidence motivating each gate is FENCED-only (Thursday era <= 2025-08-28). The Tuesday era (2025-09-09+) is the fresh holdout and KEEPS ACCUMULATING ~4 expiry days/month — do NOT touch it until a single gated cell is frozen, then one holdout shot on whatever Tuesday-era days exist at that time.",
+    "MANDATORY before any holdout: re-run under the 2x adversarial fill model (half-spread per leg + stop-day uplift), not the optimistic 1x mid-fill. The 1x PF 1.47 is known-optimistic; 3x nearly kills it. Report PF at 1x/2x/3x for every gated cell.",
+    "Filters (each a SKIP condition, ANDed if multiple): (a) vix_skip_tercile=low -> skip entry when India VIX at 09:20 is below the trailing-252-expiry 33rd percentile; (b) vrp_min_pctile -> skip when entry ATM straddle value as %% of spot is below this percentile of the trailing 20 expiry days.",
+    "Aronson MCP permutation test to be run on the winning cell: encode the VIX gate as one rule, test net-P&L vs the no-gate null, report honest p-value (bootstrap CIs are weak at this trade count)."
+  ],
+  "base_cell": {"entry_time": "09:20", "stop_pct": 0.25, "take_pct": null},
+  "grid": {
+    "vix_skip_tercile": ["low", "none"],
+    "vrp_min_pctile": [0.0, 0.4, 0.6]
+  },
+  "evaluation": {
+    "fill_models": ["1x", "2x", "3x"],
+    "kill_criteria": "net positive at 2x fills AND PF_2x >= 1.25 AND positive mid+high-VIX windows AND MCP p < 0.05 on the gate; then one holdout shot."
+  }
+}
