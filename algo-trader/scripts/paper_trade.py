@@ -161,6 +161,22 @@ except ImportError:
     log.warning("rest_poll_feed not available")
 
 try:
+    from algotrader.data.ws_feed_v2 import DhanLiveFeedV2
+    _WS_V2_AVAILABLE = True
+except ImportError:
+    DhanLiveFeedV2 = None  # type: ignore[assignment,misc]
+    _WS_V2_AVAILABLE = False
+    log.warning("ws_feed_v2 not available")
+
+try:
+    from algotrader.data.feed_manager import FeedManager
+    _FEED_MGR_AVAILABLE = True
+except ImportError:
+    FeedManager = None  # type: ignore[assignment,misc]
+    _FEED_MGR_AVAILABLE = False
+    log.warning("feed_manager not available")
+
+try:
     from algotrader.data.live_breadth import LiveBreadth
     _BREADTH_AVAILABLE = True
 except ImportError:
@@ -204,12 +220,15 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--feed",
-        default="rest",
-        choices=["rest", "ws"],
+        default="auto",
+        choices=["auto", "rest", "ws"],
         help=(
-            "Live bar feed backend.  'rest' (default) polls Dhan /charts/intraday "
-            "every ~60 s — proven reliable path used by the backfill.  'ws' uses "
-            "the dhanhq WebSocket MarketFeed (delivered zero bars on 2026-06-15)."
+            "Live bar feed backend.  "
+            "'auto' (default) = FeedManager: raw-WS primary (DhanLiveFeedV2) with "
+            "automatic REST failover within ~90 s of bar silence — safe even if WS "
+            "stalls (as it did for 6.5 h on 2026-06-15).  "
+            "'rest' = RestPollingBarSource only (proven reliable).  "
+            "'ws' = legacy dhanhq SDK MarketFeed (zombie-socket risk)."
         ),
     )
     parser.add_argument(
@@ -654,7 +673,10 @@ def _run_replay(args: argparse.Namespace, replay_date: date) -> list:
 
 def _run_live(args: argparse.Namespace, session_date: date) -> list:
     """Run live paper session. Returns list of PaperExecutors."""
-    feed_mode = getattr(args, "feed", "rest")
+    feed_mode = getattr(args, "feed", "auto")
+    if feed_mode == "auto" and not _FEED_MGR_AVAILABLE and not _REST_FEED_AVAILABLE:
+        log.error("FeedManager and RestPollingBarSource both unavailable; cannot run")
+        return []
     if feed_mode == "ws" and not _FEED_AVAILABLE:
         log.error("LiveBarFeed not available; cannot run live mode with --feed ws")
         return []
@@ -697,6 +719,28 @@ def _run_live(args: argparse.Namespace, session_date: date) -> list:
     # on 2026-06-15 (0DTE expiry) — REST is now the default.
     live_subs = futures_subs + equity_subs
 
+    if feed_mode == "auto":
+        # FeedManager: DhanLiveFeedV2 primary + automatic REST failover within 90 s.
+        # Safe by design: if WS stalls (as it did on 2026-06-15), REST takes over.
+        if _FEED_MGR_AVAILABLE:
+            import os
+            feed = FeedManager(
+                subscriptions=live_subs,
+                on_bar=router.on_bar,
+                access_token=token,
+                client_id=os.environ.get("DHAN_CLIENT_ID", ""),
+                failover_seconds=90.0,
+            )
+            log.info(
+                "Using FeedManager (DhanLiveFeedV2 primary + REST failover @ 90s)"
+            )
+        else:
+            # Graceful degradation to REST-only
+            log.warning(
+                "FeedManager not available — falling back to REST-only for safety"
+            )
+            feed_mode = "rest"
+
     if feed_mode == "rest":
         if not _REST_FEED_AVAILABLE:
             log.error("RestPollingBarSource not available; falling back to ws")
@@ -718,7 +762,7 @@ def _run_live(args: argparse.Namespace, session_date: date) -> list:
             on_bar=router.on_bar,
             access_token=token,
         )
-        log.info("Using WebSocket feed (legacy mode)")
+        log.info("Using WebSocket feed (legacy SDK mode — zombie-socket risk)")
 
     # Wire subscribe_cb to options/straddle strategies AFTER the feed is
     # created so the callback is the live feed's subscribe_dynamic method.
