@@ -10,7 +10,11 @@ User=ubuntu
 WorkingDirectory=/home/ubuntu/projects/algo-trader
 Environment=TZ=Asia/Kolkata
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/home/ubuntu/projects/algo-trader/.venv/bin/python scripts/paper_trade.py --log-level INFO
+# --feed rest: the PROVEN feed drives the trade path. The new raw-ws v2 is
+# validated in parallel SHADOW mode (algo-trader-ws-shadow.timer) and only
+# promoted to --feed auto after a field-by-field clean day. Don't stack two
+# unknowns over the 0DTE first-live run.
+ExecStart=/home/ubuntu/projects/algo-trader/.venv/bin/python scripts/paper_trade.py --feed rest --log-level INFO
 # The session self-exits ~15:35 IST after publishing EOD. Hard safety cap at 15:45.
 RuntimeMaxSec=24300
 # No Restart=: a clean exit at end-of-session is expected, not a failure to retry.
