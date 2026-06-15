@@ -1,0 +1,16 @@
+[Unit]
+Description=algo-trader: WS shadow validation — runs DhanLiveFeedV2 + RestPollingBarSource in parallel for field-by-field comparison. PAPER/DATA ONLY, no trade path.
+Documentation=https://github.com/techfreakworm/finAgent
+After=network-online.target algo-trader-token.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/projects/algo-trader
+Environment=TZ=Asia/Kolkata
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/ubuntu/projects/algo-trader/.venv/bin/python scripts/ws_shadow.py
+# 24300 s = 6h 45m: covers 09:00 start to ~15:45 hard cap
+RuntimeMaxSec=24300
+# No Restart=: a clean exit after writing the report is expected.

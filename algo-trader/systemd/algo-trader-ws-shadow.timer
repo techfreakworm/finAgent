@@ -1,0 +1,9 @@
+[Unit]
+Description=algo-trader: start WS shadow validation at 09:00 IST on trading days
+
+[Timer]
+OnCalendar=Mon-Fri 09:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
