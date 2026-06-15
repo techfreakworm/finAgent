@@ -153,6 +153,14 @@ except ImportError:
     log.warning("live_feed not available")
 
 try:
+    from algotrader.data.rest_poll_feed import RestPollingBarSource
+    _REST_FEED_AVAILABLE = True
+except ImportError:
+    RestPollingBarSource = None  # type: ignore[assignment,misc]
+    _REST_FEED_AVAILABLE = False
+    log.warning("rest_poll_feed not available")
+
+try:
     from algotrader.data.live_breadth import LiveBreadth
     _BREADTH_AVAILABLE = True
 except ImportError:
@@ -195,6 +203,16 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Skip soma-publish (automatically set in replay mode).",
     )
     parser.add_argument(
+        "--feed",
+        default="rest",
+        choices=["rest", "ws"],
+        help=(
+            "Live bar feed backend.  'rest' (default) polls Dhan /charts/intraday "
+            "every ~60 s — proven reliable path used by the backfill.  'ws' uses "
+            "the dhanhq WebSocket MarketFeed (delivered zero bars on 2026-06-15)."
+        ),
+    )
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
@@ -219,9 +237,13 @@ def _build_futures_subs() -> tuple[list, dict[str, str]]:
     ReplayDriver loads index bar files for the futures instruments.
     """
     from algotrader.data.instruments import NIFTY_FUT, BANKNIFTY_FUT
+    # Live REST fetches the INDEX bars (security 13/25 on IDX_I) for the
+    # underlying signal; the strategy-facing instrument stays *_FUT so symbol
+    # matching + futures cost/lot still apply. In replay the segment is unused
+    # (ReplayDriver uses data_symbol_map for the cache dir).
     subs = [
-        (NIFTY_FUT.security_id, "NSE_FNO", NIFTY_FUT),
-        (BANKNIFTY_FUT.security_id, "NSE_FNO", BANKNIFTY_FUT),
+        (NIFTY_FUT.security_id, "IDX_I", NIFTY_FUT),
+        (BANKNIFTY_FUT.security_id, "IDX_I", BANKNIFTY_FUT),
     ]
     # Map futures symbols to index cache dirs (bars are identical)
     sym_map = {
@@ -237,22 +259,18 @@ def _build_equity_subs() -> list:
     Uses symbol as security_id placeholder (safe in replay; not used for live
     websocket subscription in this function's primary use case).
     """
-    from algotrader.core import Instrument, Segment
+    from algotrader.backtest.data_source import equity_instrument
     cache = _PROJECT_ROOT / "data" / "cache"
     subs = []
     for sym in _NIFTY50_CACHE_SYMBOLS:
-        if (cache / sym / "1m").exists():
-            instr = Instrument(
-                symbol=sym,
-                security_id=sym,          # placeholder for replay
-                segment=Segment.NSE_EQ,
-                tick_size=0.05,
-                is_derivative=False,
-                can_short_intraday=True,
-            )
-            subs.append((sym, "NSE_EQ", instr))
-        else:
+        if not (cache / sym / "1m").exists():
             log.debug("equity cache missing for %s — skipping breadth", sym)
+            continue
+        instr = equity_instrument(sym)   # REAL Dhan security_id from the NIFTY-50 map
+        if instr.security_id in ("", "?"):
+            log.warning("no security_id for %s — skipping breadth", sym)
+            continue
+        subs.append((instr.security_id, "NSE_EQ", instr))
     return subs
 
 
@@ -636,8 +654,12 @@ def _run_replay(args: argparse.Namespace, replay_date: date) -> list:
 
 def _run_live(args: argparse.Namespace, session_date: date) -> list:
     """Run live paper session. Returns list of PaperExecutors."""
-    if not _FEED_AVAILABLE:
-        log.error("LiveBarFeed not available; cannot run live mode")
+    feed_mode = getattr(args, "feed", "rest")
+    if feed_mode == "ws" and not _FEED_AVAILABLE:
+        log.error("LiveBarFeed not available; cannot run live mode with --feed ws")
+        return []
+    if feed_mode == "rest" and not _REST_FEED_AVAILABLE and not _FEED_AVAILABLE:
+        log.error("Neither RestPollingBarSource nor LiveBarFeed available; cannot run")
         return []
 
     token = get_valid_token()
@@ -669,15 +691,34 @@ def _run_live(args: argparse.Namespace, session_date: date) -> list:
     }
     router = _BarRouter(breadth, executors, session_date, opt_accounts=opt_accounts)
 
-    # Subscribe EVERYTHING live: the 50 equities feed LiveBreadth (ws supports
-    # 5000 instruments/conn). Equities-only-via-REST left breadth blind on
-    # 2026-06-12 (missed SHORT signal) — never again.
+    # Subscribe EVERYTHING live: the 50 equities feed LiveBreadth.
+    # REST feed: equity bars arrive via REST polling just like futures/index bars.
+    # WS feed (legacy): ws supports 5000 instruments/conn but delivered zero bars
+    # on 2026-06-15 (0DTE expiry) — REST is now the default.
     live_subs = futures_subs + equity_subs
-    feed = LiveBarFeed(
-        subscriptions=live_subs,
-        on_bar=router.on_bar,
-        access_token=token,
-    )
+
+    if feed_mode == "rest":
+        if not _REST_FEED_AVAILABLE:
+            log.error("RestPollingBarSource not available; falling back to ws")
+            feed_mode = "ws"
+        else:
+            feed = RestPollingBarSource(
+                subscriptions=live_subs,
+                on_bar=router.on_bar,
+                access_token=token,
+            )
+            log.info("Using REST polling feed (reliable path)")
+
+    if feed_mode == "ws":
+        if not _FEED_AVAILABLE:
+            log.error("LiveBarFeed not available; cannot run live mode")
+            return []
+        feed = LiveBarFeed(
+            subscriptions=live_subs,
+            on_bar=router.on_bar,
+            access_token=token,
+        )
+        log.info("Using WebSocket feed (legacy mode)")
 
     # Wire subscribe_cb to options/straddle strategies AFTER the feed is
     # created so the callback is the live feed's subscribe_dynamic method.
