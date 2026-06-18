@@ -104,18 +104,24 @@ class TestResolveOptionNiftyWeekly:
         assert int(instr.security_id) > 0
 
     def test_nifty_ce_expiry_within_7_days(self):
-        """Nearest NIFTY weekly expiry is <= 7 calendar days away from _ON."""
-        instr = resolve_option("NIFTY", 24350.0, "CE", _ON)
-        # Parse expiry from symbol: "NIFTY-Jun2026-24350-CE"
-        # Use _load_df to get the expiry directly
+        """Nearest NIFTY weekly expiry is <= 7 calendar days away.
+
+        Uses date.today() (not the fixed _ON): this asserts against the LIVE
+        scrip master, which only holds FUTURE expiries, so a hardcoded past
+        reference drifts out of the 7-day window once weeklies expire + drop
+        off. The resolver is correct for the real 'today' (weeklies are <=7
+        days apart, so the nearest future one is always within 7 days).
+        """
+        today = date.today()
+        instr = resolve_option("NIFTY", 24350.0, "CE", today)
         df = _load_df()
         row = df[df["security_id"] == instr.security_id]
         assert not row.empty
         expiry: date = row.iloc[0]["expiry_date"]
-        assert expiry >= _ON, f"expiry {expiry} is before on={_ON}"
-        assert (expiry - _ON).days <= 7, (
-            f"expiry {expiry} is more than 7 days from {_ON}: "
-            f"{(expiry - _ON).days} days"
+        assert expiry >= today, f"expiry {expiry} is before today={today}"
+        assert (expiry - today).days <= 7, (
+            f"nearest weekly {expiry} is >7 days from {today}: "
+            f"{(expiry - today).days} days"
         )
 
     def test_nifty_pe_same_expiry_as_ce(self):

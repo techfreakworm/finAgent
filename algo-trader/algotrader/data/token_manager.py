@@ -12,8 +12,9 @@ from __future__ import annotations
 import json
 import os
 import stat
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -30,6 +31,15 @@ ENV_SOURCES = [
 
 AUTH_BASE = "https://auth.dhan.co"
 API_BASE = "https://api.dhan.co/v2"
+IST = ZoneInfo("Asia/Kolkata")
+
+# A reused token must OUTLIVE the whole trading session, not merely be valid
+# "right now". Dhan tokens last 24h; the 08:45 pre-open refresh must mint fresh
+# if the saved token would expire before the session ends. 8h covers an 08:45
+# start through past market close (15:30) with headroom.
+# INCIDENT 2026-06-18: a token valid until 09:00 passed the 08:45 probe, was
+# reused, then expired at the exact moment the 09:00 session started -> no token.
+REUSE_MARGIN = timedelta(hours=8)
 
 
 def _load_env() -> dict[str, str]:
@@ -127,16 +137,37 @@ def probe_profile(token: str) -> dict:
     return d
 
 
+def _validity_dt(prof: dict) -> "datetime | None":
+    """Parse Dhan 'tokenValidity' (DD/MM/YYYY HH:MM, IST) to an aware datetime."""
+    s = str(prof.get("tokenValidity", "")).strip()
+    for fmt in ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M"):
+        try:
+            return datetime.strptime(s, fmt).replace(tzinfo=IST)
+        except ValueError:
+            continue
+    return None
+
+
 def get_valid_token(verbose: bool = False) -> str | None:
-    """Return a working access token: reuse saved one if valid, else mint."""
+    """Return a working access token: reuse the saved one only if it will
+    OUTLIVE the trading session (>= REUSE_MARGIN ahead); otherwise mint fresh."""
     env = _load_env()
     saved = env.get("DHAN_ACCESS_TOKEN", "")
     if saved:
         prof = probe_profile(saved)
         if prof.get("_http") == 200:
+            vdt = _validity_dt(prof)
+            now = datetime.now(IST)
+            if vdt is not None and vdt - now >= REUSE_MARGIN:
+                if verbose:
+                    print(f"reusing saved token (valid to {prof.get('tokenValidity')}, "
+                          f">= {REUSE_MARGIN} ahead)")
+                return saved
             if verbose:
-                print("reusing saved token; profile:", json.dumps(prof))
-            return saved
+                print(f"saved token valid now but expires too soon "
+                      f"(tokenValidity={prof.get('tokenValidity')}); minting fresh")
+        elif verbose:
+            print(f"saved token invalid (HTTP {prof.get('_http')}); minting fresh")
     token, diag = mint_token_totp(env)
     if verbose:
         print(f"mint via TOTP: {diag}; token={_mask(token or '')}")
