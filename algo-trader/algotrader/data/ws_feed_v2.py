@@ -23,6 +23,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import struct
 import threading
 from datetime import datetime
@@ -98,6 +99,22 @@ _FMT_FULL    = "<BHBIfHIfIIIIIIffff100s"  # 162 bytes
 _FMT_OI      = "<BHBII"    # 12 bytes
 _FMT_PREV_CL = "<BHBIfI"   # 16 bytes (same layout as ticker)
 _FMT_DISC    = "<BHBIH"    # 10 bytes: code, msg_len, seg, sec_id, disc_code
+
+# Response header (every packet): code(B,1) msg_len(H,2) seg(B,1) sec_id(I,4)
+_HEADER_LEN = 8
+
+# Known fixed packet sizes per response code (bytes). Verified against live
+# captures: the header msg_len field equals these exactly (e.g. QUOTE msg_len=50).
+# Codes NOT in this map (market-depth=3, status=7) advance by the header's
+# msg_len field instead — we never subscribe to those in Quote mode.
+_PKT_SIZE: dict[int, int] = {
+    _RESP_TICKER: 16,
+    _RESP_QUOTE:  50,
+    _RESP_FULL:   162,
+    _RESP_OI:     12,
+    _RESP_PREV_CL: 16,
+    _RESP_DISCONNECT: 10,
+}
 
 
 # =================================================================== main class
@@ -175,6 +192,15 @@ class DhanLiveFeedV2:
         self._reconnect_count = 0
         self._tick_count      = 0
 
+        # Optional raw-frame capture (diagnostics only; gated by env)
+        self._capture_enabled = os.environ.get("WS_FRAME_CAPTURE", "") == "1"
+        self._capture_fh = None
+        self._capture_n = 0
+        try:
+            self._capture_max = int(os.environ.get("WS_FRAME_CAPTURE_MAX", "50000"))
+        except ValueError:
+            self._capture_max = 50000
+
     # ------------------------------------------------------------------ public
 
     def start(self) -> None:
@@ -202,6 +228,14 @@ class DhanLiveFeedV2:
                 pass
         if self._thread is not None:
             self._thread.join(timeout=10)
+        if self._capture_fh is not None:
+            try:
+                self._capture_fh.close()
+                log.info("DhanLiveFeedV2: raw frame capture closed (%d frames)",
+                         self._capture_n)
+            except Exception:
+                pass
+            self._capture_fh = None
         log.info(
             "DhanLiveFeedV2 stopped (ticks=%d reconnects=%d)",
             self._tick_count, self._reconnect_count,
@@ -397,30 +431,95 @@ class DhanLiveFeedV2:
     # -------------------------------------------------------------- dispatch
 
     def _dispatch(self, data: bytes) -> None:
-        """Route a raw binary packet to the appropriate parser."""
-        if len(data) < 1:
-            return
-        first_byte = struct.unpack_from("<B", data, 0)[0]
+        """Route a raw binary frame to parsers, walking ALL packets it carries.
 
-        if first_byte == _RESP_TICKER:
-            result = self._parse_ticker(data)
-        elif first_byte == _RESP_QUOTE:
-            result = self._parse_quote(data)
-        elif first_byte == _RESP_FULL:
-            result = self._parse_full(data)
-        elif first_byte == _RESP_DISCONNECT:
-            self._handle_disconnect(data)
+        Dhan v2 may concatenate multiple response packets into one WebSocket
+        frame.  The previous implementation parsed only the first packet
+        (``data[:16/50/162]``) and dropped the rest — a latent data-loss bug if
+        the server ever batches.  We now walk the frame packet-by-packet:
+        read the 8-byte header (code, msg_len), parse that one packet, then
+        advance by its length (the known fixed size for the code, which equals
+        the header ``msg_len`` — verified against live captures; falling back to
+        ``msg_len`` for codes we don't size explicitly).
+        """
+        n = len(data)
+        if n < _HEADER_LEN:
             return
-        elif first_byte in (_RESP_OI, _RESP_PREV_CL, _RESP_STATUS, _RESP_MARKET_D):
+        if self._capture_enabled:
+            self._capture_frame(data)
+
+        off = 0
+        guard = 0
+        while off + _HEADER_LEN <= n:
+            guard += 1
+            if guard > 4096:  # runaway protection — no real frame has this many
+                log.warning("DhanLiveFeedV2: frame walk exceeded 4096 packets; aborting")
+                break
+            code, msg_len = struct.unpack_from("<BH", data, off)
+            size = _PKT_SIZE.get(code, msg_len)
+            if size <= 0 or off + size > n:
+                # Unknown/short boundary — can't safely continue this frame.
+                if off == 0:
+                    log.debug("DhanLiveFeedV2: undecodable frame head code=%d "
+                              "size=%d frame_len=%d", code, size, n)
+                break
+            self._dispatch_one(code, data[off:off + size])
+            off += size
+
+    def _dispatch_one(self, code: int, pkt: bytes) -> None:
+        """Parse a single response packet and feed any resulting tick."""
+        if code == _RESP_TICKER:
+            result = self._parse_ticker(pkt)
+        elif code == _RESP_QUOTE:
+            result = self._parse_quote(pkt)
+        elif code == _RESP_FULL:
+            result = self._parse_full(pkt)
+        elif code == _RESP_DISCONNECT:
+            self._handle_disconnect(pkt)
+            return
+        elif code in (_RESP_OI, _RESP_PREV_CL, _RESP_STATUS, _RESP_MARKET_D):
             # No ticks from these; ignore
             return
         else:
-            log.debug("DhanLiveFeedV2: unknown response code %d", first_byte)
+            log.debug("DhanLiveFeedV2: unknown response code %d", code)
             return
 
         if result is not None:
             sec_id_int, ltp, ltt_epoch = result
             self._feed_tick(sec_id_int, ltp, ltt_epoch)
+
+    # ----------------------------------------------------------- raw capture
+
+    def _capture_frame(self, data: bytes) -> None:
+        """Append a raw frame (hex) to the capture file, if enabled and uncapped.
+
+        Gated by env ``WS_FRAME_CAPTURE=1``.  Best-effort, bounded by
+        ``self._capture_max`` frames so the file can't grow without limit.
+        Pure diagnostics — never affects bar building or the trade path.
+        """
+        if self._capture_n >= self._capture_max:
+            return
+        try:
+            if self._capture_fh is None:
+                ts = datetime.now(IST).strftime("%Y%m%dT%H%M%S")
+                path = os.path.join(
+                    os.environ.get("WS_FRAME_CAPTURE_DIR", "reports/ws_shadow"),
+                    f"raw_frames_{ts}.jsonl",
+                )
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                self._capture_fh = open(path, "w")
+                log.info("DhanLiveFeedV2: raw frame capture -> %s (max=%d)",
+                         path, self._capture_max)
+            # JSONL: arrival epoch (the bar clock) + raw hex (carries LTT).
+            # Lets a borderline shadow verdict be decomposed post-hoc into
+            # arrival-vs-LTT skew, boundary latency, or clock issues.
+            self._capture_fh.write(
+                '{"a": %.3f, "h": "%s"}\n'
+                % (self._arrival_now().timestamp(), data.hex())
+            )
+            self._capture_n += 1
+        except Exception:
+            log.debug("frame capture write failed", exc_info=True)
 
     # --------------------------------------------------------------- parsers
 
@@ -503,20 +602,37 @@ class DhanLiveFeedV2:
 
     # ---------------------------------------------------------- tick dispatch
 
+    def _arrival_now(self) -> datetime:
+        """Wall-clock arrival time (tz-aware IST).  Seam for deterministic tests."""
+        return datetime.now(IST)
+
     def _feed_tick(self, security_id_int: int, ltp: float, ltt_epoch: int) -> None:
-        """Convert a parsed tick into a BarBuilder feed call."""
+        """Convert a parsed tick into a BarBuilder feed call.
+
+        Bars are bucketed by tick ARRIVAL (wall-clock) time, NOT the packet's
+        last-trade-time (``ltt_epoch``).
+
+        ROOT CAUSE of the 2026-06-19 shadow failure (819,582 ticks collapsed to
+        ~2,333 bars vs REST's 19,448; 99.6% close-mismatch; OPEN phase empty):
+        Dhan's Quote ``LTT`` is the last-TRADE timestamp and updates coarsely —
+        many quote packets repeat a stale LTT (and off-hours it is nonsensical,
+        e.g. 21:2x for equities).  Bucketing 1-min bars on it folded a whole
+        day of ticks into ~45 distinct LTT-minutes per instrument and stamped
+        wrong closes.  Arrival time is the correct clock for building bars from
+        a live tick stream and matches the exchange minute to sub-second
+        latency.  ``ltt_epoch`` is retained only for optional diagnostics.
+        """
         key = str(security_id_int)
         builder = self._builders.get(key)
         if builder is None:
             log.debug("DhanLiveFeedV2: no builder for security_id=%d", security_id_int)
             return
 
-        try:
-            ts = datetime.fromtimestamp(ltt_epoch, tz=IST)
-        except (OSError, ValueError, OverflowError) as exc:
-            log.debug("Invalid LTT epoch %d: %s", ltt_epoch, exc)
+        if ltp is None or ltp <= 0:
+            # Zero/negative price = off-hours snapshot or bad print; never a bar.
             return
 
+        ts = self._arrival_now()
         tick = {"ltp": ltp, "ltq": 1, "ts": ts}
         self._tick_count += 1
         try:

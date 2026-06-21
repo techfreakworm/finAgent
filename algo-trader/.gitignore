@@ -23,13 +23,6 @@ data/paper*.db
 data/paper/
 reports/daily/
 
-# Raw books — never commit copyrighted sources (distilled notes in docs/books are fine)
-*.pdf
-*.epub
-# Staging inbox where raw books are dropped (outside repo, but defensive)
-inbox/
-# Playwright MCP runtime snapshots
-.playwright-mcp/
-# Raw per-task walk-forward sweep outputs (regenerable research intermediates;
-# the aggregated *_eval.json summaries + campaign report ARE committed)
-reports/sweeps/gen*/
+# WS raw-frame captures (large, diagnostics-only) — keep the .json/.md verdicts
+reports/ws_shadow/raw_frames_*.jsonl
+reports/ws_shadow/raw_capture_*.jsonl

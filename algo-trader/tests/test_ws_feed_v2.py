@@ -12,7 +12,7 @@ import asyncio
 import struct
 import threading
 import time as _time_mod
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 from zoneinfo import ZoneInfo
@@ -238,16 +238,41 @@ class TestBinaryParsers:
         self.feed._dispatch(b"\xff" + b"\x00" * 20)  # must not raise
 
 
+# ================================================================ arrival clock
+
+class _Clock:
+    """Controllable wall-clock for deterministic arrival-time tests."""
+
+    def __init__(self, base: datetime) -> None:
+        self.t = base
+
+    def now(self) -> datetime:
+        return self.t
+
+    def at(self, minute_offset: int = 0, second: int = 0) -> "_Clock":
+        self.t = self._base + timedelta(minutes=minute_offset, seconds=second)
+        return self
+
+    def set_base(self, base: datetime) -> None:
+        self._base = base
+        self.t = base
+
+
+# A known market-open minute: 2024-01-15 09:15:00 IST
+_BASE_ARRIVAL = datetime(2024, 1, 15, 9, 15, 0, tzinfo=IST)
+
+
 # ================================================================ bar building
 
 class TestBarBuilding:
-    """Ticks fed via _feed_tick should build correct 1-min OHLCV bars."""
+    """Ticks fed via _feed_tick build 1-min bars bucketed by ARRIVAL time.
 
-    # A known 09:15 IST epoch (market-open minute)
-    # 2024-01-15 09:15:00 IST = 2024-01-15 03:45:00 UTC
-    _BASE_EPOCH = int(
-        datetime(2024, 1, 15, 3, 45, 0, tzinfo=timezone.utc).timestamp()
-    )
+    Bars are bucketed by tick arrival (wall clock), NOT the packet LTT, so the
+    LTT epoch passed to ``_feed_tick`` is deliberately a constant STALE value
+    here — it must not affect bucketing.
+    """
+
+    _STALE_LTT = 1_700_000_000  # constant; must be ignored by bucketing
 
     def setup_method(self):
         self.bars: list[BarEvent] = []
@@ -259,16 +284,19 @@ class TestBarBuilding:
             access_token="test_token",
             grace_sec=0.05,  # short grace for tests
         )
+        self.clock = _Clock(_BASE_ARRIVAL)
+        self.clock.set_base(_BASE_ARRIVAL)
+        self.feed._arrival_now = self.clock.now  # type: ignore[method-assign]
 
-    def _epoch_at(self, minute_offset: int = 0, second: int = 30) -> int:
-        """Return epoch for 09:15+minute_offset IST at given second."""
-        return self._BASE_EPOCH + minute_offset * 60 + second
+    def _arrive(self, minute_offset: int, second: int) -> None:
+        self.clock.at(minute_offset, second)
 
     def test_single_tick_in_09_15_window_builds_bar_on_next_minute(self):
-        """A tick at 09:15:30 → bar emitted when 09:16 tick arrives."""
-        self.feed._feed_tick(13, 24500.0, self._epoch_at(0, 30))
-        # Second tick in next minute forces close of 09:15 bar
-        self.feed._feed_tick(13, 24510.0, self._epoch_at(1, 15))
+        """A tick arriving 09:15:30 → bar emitted when a 09:16 tick arrives."""
+        self._arrive(0, 30)
+        self.feed._feed_tick(13, 24500.0, self._STALE_LTT)
+        self._arrive(1, 15)
+        self.feed._feed_tick(13, 24510.0, self._STALE_LTT)
         assert len(self.bars) == 1
         bar = self.bars[0].bar
         assert bar.open == 24500.0
@@ -279,14 +307,12 @@ class TestBarBuilding:
         assert ts.hour == 9 and ts.minute == 15
 
     def test_multiple_ticks_build_correct_ohlc(self):
-        """OHLC should reflect min/max of ticks within the minute."""
-        t = self._epoch_at(0, 0)
-        self.feed._feed_tick(13, 24500.0, t)       # open
-        self.feed._feed_tick(13, 24600.0, t + 20)  # new high
-        self.feed._feed_tick(13, 24400.0, t + 40)  # new low
-        self.feed._feed_tick(13, 24550.0, t + 55)  # close
-        # Force close with next-minute tick
-        self.feed._feed_tick(13, 24560.0, self._epoch_at(1, 5))
+        """OHLC should reflect min/max of ticks within the arrival minute."""
+        self._arrive(0, 0);  self.feed._feed_tick(13, 24500.0, self._STALE_LTT)  # open
+        self._arrive(0, 20); self.feed._feed_tick(13, 24600.0, self._STALE_LTT)  # high
+        self._arrive(0, 40); self.feed._feed_tick(13, 24400.0, self._STALE_LTT)  # low
+        self._arrive(0, 55); self.feed._feed_tick(13, 24550.0, self._STALE_LTT)  # close
+        self._arrive(1, 5);  self.feed._feed_tick(13, 24560.0, self._STALE_LTT)  # roll
         assert len(self.bars) == 1
         bar = self.bars[0].bar
         assert bar.open == 24500.0
@@ -296,32 +322,135 @@ class TestBarBuilding:
 
     def test_grace_timer_closes_bar_without_next_tick(self):
         """The grace timer should close the open bar even with no further ticks."""
-        self.feed._feed_tick(13, 24500.0, self._epoch_at(0, 30))
-        # Wait for grace timer (set to 0.05 s in setup_method)
-        _time_mod.sleep(0.3)
+        self._arrive(0, 30)
+        self.feed._feed_tick(13, 24500.0, self._STALE_LTT)
+        _time_mod.sleep(0.3)  # wait for grace timer (0.05 s)
         assert len(self.bars) >= 1
         assert abs(self.bars[0].bar.open - 24500.0) < 0.01
 
-    def test_out_of_order_tick_is_dropped(self):
-        """A tick older than the current bar bucket must be silently dropped."""
-        self.feed._feed_tick(13, 24500.0, self._epoch_at(1, 30))  # 09:16
-        self.feed._feed_tick(13, 99999.0, self._epoch_at(0, 45))  # 09:15 → OOO
-        self.feed._feed_tick(13, 24600.0, self._epoch_at(2, 10))  # 09:17 → close
+    def test_out_of_order_arrival_is_dropped(self):
+        """A tick whose arrival bucket precedes the current bar must be dropped."""
+        self._arrive(1, 30); self.feed._feed_tick(13, 24500.0, self._STALE_LTT)  # 09:16
+        self._arrive(0, 45); self.feed._feed_tick(13, 99999.0, self._STALE_LTT)  # OOO
+        self._arrive(2, 10); self.feed._feed_tick(13, 24600.0, self._STALE_LTT)  # 09:17
         assert len(self.bars) == 1
-        # The OOO price (99999) must NOT appear in the 09:16 bar
-        bar = self.bars[0].bar
-        assert bar.high < 99000.0
+        assert self.bars[0].bar.high < 99000.0
 
     def test_unknown_security_id_is_safe(self):
         """A tick for an unsubscribed instrument must not raise."""
-        self.feed._feed_tick(99999, 24500.0, self._epoch_at(0, 30))  # no builder
+        self._arrive(0, 30)
+        self.feed._feed_tick(99999, 24500.0, self._STALE_LTT)  # no builder
 
     def test_bar_is_complete(self):
         """Emitted bars must always have complete=True."""
-        self.feed._feed_tick(13, 24500.0, self._epoch_at(0, 30))
-        self.feed._feed_tick(13, 24510.0, self._epoch_at(1, 10))
+        self._arrive(0, 30); self.feed._feed_tick(13, 24500.0, self._STALE_LTT)
+        self._arrive(1, 10); self.feed._feed_tick(13, 24510.0, self._STALE_LTT)
         assert len(self.bars) == 1
         assert self.bars[0].bar.complete is True
+
+
+# =========================================================== arrival-bucketing regression
+
+class TestArrivalTimeBucketing:
+    """Regression for the 2026-06-19 root cause: bars MUST bucket by arrival
+    time, not the (often stale/coarse) packet LTT.
+    """
+
+    def setup_method(self):
+        self.bars: list[BarEvent] = []
+        instr = _make_instrument(symbol="NIFTY", security_id="13")
+        self.feed = DhanLiveFeedV2(
+            subscriptions=[("13", "IDX_I", instr)],
+            on_bar=self.bars.append,
+            client_id="test",
+            access_token="test_token",
+            grace_sec=0.05,
+        )
+        self.clock = _Clock(_BASE_ARRIVAL)
+        self.clock.set_base(_BASE_ARRIVAL)
+        self.feed._arrival_now = self.clock.now  # type: ignore[method-assign]
+
+    def test_stale_ltt_does_not_collapse_bars(self):
+        """Many ticks sharing ONE frozen LTT, arriving across 3 minutes, must
+        produce 3 distinct bars — NOT one (the old LTT-bucketing bug)."""
+        frozen_ltt = 1_700_000_000
+        # 09:15: two ticks
+        self.clock.at(0, 10); self.feed._feed_tick(13, 100.0, frozen_ltt)
+        self.clock.at(0, 50); self.feed._feed_tick(13, 101.0, frozen_ltt)
+        # 09:16: two ticks (same frozen LTT)
+        self.clock.at(1, 10); self.feed._feed_tick(13, 102.0, frozen_ltt)
+        self.clock.at(1, 50); self.feed._feed_tick(13, 103.0, frozen_ltt)
+        # 09:17: one tick, then roll to 09:18 to flush 09:17
+        self.clock.at(2, 10); self.feed._feed_tick(13, 104.0, frozen_ltt)
+        self.clock.at(3, 5);  self.feed._feed_tick(13, 105.0, frozen_ltt)
+
+        minutes = sorted({b.bar.ts_open.astimezone(IST).strftime("%H:%M") for b in self.bars})
+        assert minutes == ["09:15", "09:16", "09:17"], minutes
+        # close of each bar = last arrival price in that minute
+        by_min = {b.bar.ts_open.astimezone(IST).strftime("%H:%M"): b.bar for b in self.bars}
+        assert by_min["09:15"].close == 101.0
+        assert by_min["09:16"].close == 103.0
+        assert by_min["09:17"].close == 104.0
+
+    def test_zero_or_negative_price_tick_ignored(self):
+        """ltp <= 0 (off-hours snapshot / bad print) must never build a bar."""
+        self.clock.at(0, 30)
+        self.feed._feed_tick(13, 0.0, 1_700_000_000)
+        self.feed._feed_tick(13, -5.0, 1_700_000_000)
+        self.clock.at(1, 30)
+        self.feed._feed_tick(13, 100.0, 1_700_000_000)  # valid → starts a bar
+        self.clock.at(2, 30)
+        self.feed._feed_tick(13, 101.0, 1_700_000_000)  # rolls → emits 09:16
+        assert len(self.bars) == 1
+        assert self.bars[0].bar.open == 100.0
+
+
+# =========================================================== multi-packet frame
+
+class TestMultiPacketFrame:
+    """_dispatch must walk ALL packets concatenated in one WebSocket frame."""
+
+    def setup_method(self):
+        instr = _make_instrument()
+        self.feed = DhanLiveFeedV2(
+            subscriptions=[("13", "IDX_I", instr)],
+            on_bar=lambda ev: None,
+            client_id="test",
+            access_token="test_token",
+        )
+        self.ticks: list[tuple] = []
+        self.feed._feed_tick = lambda s, l, t: self.ticks.append((s, l, t))  # type: ignore[method-assign]
+
+    def test_three_quotes_in_one_frame_all_dispatched(self):
+        frame = (
+            _build_quote_packet(security_id=13, ltp=100.0)
+            + _build_quote_packet(security_id=25, ltp=200.0)
+            + _build_quote_packet(security_id=2885, ltp=300.0)
+        )
+        self.feed._dispatch(frame)
+        assert len(self.ticks) == 3
+        assert [t[0] for t in self.ticks] == [13, 25, 2885]
+        assert [round(t[1]) for t in self.ticks] == [100, 200, 300]
+
+    def test_mixed_packet_types_in_one_frame(self):
+        """A ticker + a quote + a full concatenated → 3 ticks."""
+        frame = (
+            _build_ticker_packet(security_id=13, ltp=100.0)
+            + _build_quote_packet(security_id=25, ltp=200.0)
+            + _build_full_packet(security_id=2885, ltp=300.0)
+        )
+        self.feed._dispatch(frame)
+        assert [t[0] for t in self.ticks] == [13, 25, 2885]
+
+    def test_single_packet_frame_still_one_tick(self):
+        self.feed._dispatch(_build_quote_packet(security_id=13, ltp=100.0))
+        assert len(self.ticks) == 1
+
+    def test_trailing_garbage_after_valid_packet_is_safe(self):
+        """A valid quote followed by an undecodable tail stops cleanly."""
+        frame = _build_quote_packet(security_id=13, ltp=100.0) + b"\xff\x00\x00"
+        self.feed._dispatch(frame)
+        assert len(self.ticks) == 1  # the valid quote dispatched; tail ignored
 
 
 # ================================================================ recv timeout
