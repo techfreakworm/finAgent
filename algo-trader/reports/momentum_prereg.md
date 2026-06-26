@@ -76,3 +76,14 @@ Decision free params ≈ **1** (J ∈ {6,12}). LOCKED: skip=1, hold=1, quintile,
 **Resolved (no input needed):** equity-delivery STT = 0.10%/side (correct); yfinance `Adj Close` = split+dividend adjusted (suitable for momentum ranking).
 
 **On your approval** (and which membership path), I'll: build + QC the adjusted-data prerequisite → implement → run the pre-registered test **once** → report survive/kill + the hedge correlation. Nothing fits until then.
+
+---
+
+## UPDATE 2026-06-27 — data prerequisites RESOLVED (post NSE-research; supersedes the prereq/Resolved notes above)
+A read-only WebFetch research workflow + lead spot-checks corrected two earlier assumptions:
+- **Price data is ALREADY split+bonus back-adjusted in our Dhan cache** (verified: TATASTEEL 1:10 split 2022-07-28 → 94.75/96.00/100.20 and RELIANCE 1:1 bonus 2024-10-28 → 1334/1340/1345, both SMOOTH/no gap). → **Use the Dhan cache for survivors; do NOT use yfinance Adj-Close** (it adds dividend adjustment = a different convention; momentum runs on *price*, so split+bonus-adjusted price is correct — mixing would double-count). Residual cleaning only: the **TATAMOTORS demerger** (2025-10-14, −41% — demergers aren't ratio-adjusted) + **Aug-2021 phantom prints** → targeted scrub, not a rebuild. (My earlier "cache is UNADJUSTED" was an over-generalization from those two artifacts.)
+- **Point-in-time membership is recoverable FREE — no Playwright, no paid source.** The 8 in-window reconstitutions (add/drop + effective dates) are reconstructed from Wikipedia + `nsearchives.nseindia.com` PDFs + news; build a ~16-row `data/reference/nifty50_membership.csv`.
+- **Removed-but-still-listed names** (GAIL, IOC, SHREECEM, UPL, DIVISLAB) have live Dhan security_ids → backfill via `scripts/backfill.py` (same adjusted 1-min). **Delisted/merged** names (HDFC →2023-07; LTIMINDTREE 2023-07→2024-09) are absent from the scrip master → yfinance **daily** for their in-index spans only (the sole yfinance use; mixed-granularity, kept in a separate marked dir).
+- **Playwright is NOT needed for this dataset** (only the Akamai-gated `www.niftyindices` app-host would need it, and everything there is substitutable). No operator data action required.
+
+**Net data effort:** ~1 day curation (membership CSV + scrub) + ~2 h backfill. No paid source, no Playwright. Decision sequencing unchanged: **B-triage** (current-50, kill-only) → **A** (clean point-in-time) if B doesn't kill.
