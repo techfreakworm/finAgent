@@ -26,3 +26,7 @@ reports/daily/
 # WS raw-frame captures (large, diagnostics-only) — keep the .json/.md verdicts
 reports/ws_shadow/raw_frames_*.jsonl
 reports/ws_shadow/raw_capture_*.jsonl
+
+# Local/runtime cruft (not canonical work)
+.venv-freeze*.txt
+reports/feed_alert_*.txt
