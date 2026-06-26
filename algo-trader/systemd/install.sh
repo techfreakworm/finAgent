@@ -12,11 +12,12 @@ UNITS=(
   algo-trader-eod-report.service algo-trader-eod-report.timer
   algo-trader-eod-watchdog.service algo-trader-eod-watchdog.timer
   algo-trader-ws-shadow.service algo-trader-ws-shadow.timer
+  algo-trader-optionchain.service algo-trader-optionchain.timer
 )
 TIMERS=(
   algo-trader-token.timer algo-trader-paper.timer
   algo-trader-eod-report.timer algo-trader-eod-watchdog.timer
-  algo-trader-ws-shadow.timer
+  algo-trader-ws-shadow.timer algo-trader-optionchain.timer
 )
 
 for u in "${UNITS[@]}"; do

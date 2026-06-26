@@ -1,0 +1,16 @@
+[Unit]
+Description=algo-trader: forward option-chain collector — read-only /optionchain snapshots (per-strike bid/ask/IV/greeks/OI) for the 2 nearest NIFTY weeklies, building the real-data store for P2/P3 + a measured slippage model. PAPER/DATA ONLY, no orders.
+Documentation=https://github.com/techfreakworm/finAgent
+After=network-online.target algo-trader-token.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/projects/algo-trader
+Environment=TZ=Asia/Kolkata
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/ubuntu/projects/algo-trader/.venv/bin/python scripts/optionchain_collector.py
+# Script waits for 09:14 and self-exits at 15:16 IST. Hard cap 6.5h.
+RuntimeMaxSec=23400
+# No Restart=: clean exit at end-of-session is expected.

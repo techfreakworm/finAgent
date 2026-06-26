@@ -1,0 +1,9 @@
+[Unit]
+Description=algo-trader: daily forward option-chain collector (Mon-Fri 09:10 IST)
+
+[Timer]
+OnCalendar=Mon-Fri *-*-* 09:10:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
