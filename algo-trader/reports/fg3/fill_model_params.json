@@ -1,0 +1,155 @@
+{
+ "n_sessions": 9,
+ "expiry_tue": [
+  "2026-06-23",
+  "2026-06-30"
+ ],
+ "per_session": [
+  {
+   "date": "2026-06-21",
+   "dte": 2,
+   "n_atm_snaps": 2,
+   "illiquid_frac": 0.0
+  },
+  {
+   "date": "2026-06-22",
+   "dte": 1,
+   "n_atm_snaps": 1010,
+   "illiquid_frac": 0.0,
+   "entry": 0.00107,
+   "midday": 0.00115,
+   "last15": 0.00131
+  },
+  {
+   "date": "2026-06-23",
+   "dte": 0,
+   "n_atm_snaps": 1046,
+   "illiquid_frac": 0.0287,
+   "entry": 0.0014,
+   "midday": 0.00141,
+   "last15": 0.00328
+  },
+  {
+   "date": "2026-06-24",
+   "dte": 6,
+   "n_atm_snaps": 1046,
+   "illiquid_frac": 0.0,
+   "entry": 0.00104,
+   "midday": 0.00107,
+   "last15": 0.00105
+  },
+  {
+   "date": "2026-06-25",
+   "dte": 5,
+   "n_atm_snaps": 1038,
+   "illiquid_frac": 0.0,
+   "entry": 0.00104,
+   "midday": 0.00105,
+   "last15": 0.00117
+  },
+  {
+   "date": "2026-06-26",
+   "dte": 4,
+   "n_atm_snaps": 1054,
+   "illiquid_frac": 0.0,
+   "entry": 0.00256,
+   "midday": 0.00256,
+   "last15": 0.00256
+  },
+  {
+   "date": "2026-06-29",
+   "dte": 1,
+   "n_atm_snaps": 1040,
+   "illiquid_frac": 0.0,
+   "entry": 0.00118,
+   "midday": 0.00116,
+   "last15": 0.00127
+  },
+  {
+   "date": "2026-06-30",
+   "dte": 0,
+   "n_atm_snaps": 1032,
+   "illiquid_frac": 0.0359,
+   "entry": 0.00124,
+   "midday": 0.00136,
+   "last15": 0.00336
+  },
+  {
+   "date": "2026-07-01",
+   "dte": 6,
+   "n_atm_snaps": 1040,
+   "illiquid_frac": 0.0,
+   "entry": 0.00105,
+   "midday": 0.00109,
+   "last15": 0.00106
+  }
+ ],
+ "pooled_halfspread_frac": {
+  "entry": {
+   "median": 0.00117,
+   "iqr": [
+    0.00104,
+    0.00136
+   ],
+   "p90": 0.00241,
+   "n": 160
+  },
+  "midday": {
+   "median": 0.00119,
+   "iqr": [
+    0.00095,
+    0.00147
+   ],
+   "p90": 0.00241,
+   "n": 4210
+  },
+  "last15": {
+   "median": 0.00131,
+   "iqr": [
+    0.00109,
+    0.00241
+   ],
+   "p90": 0.00401,
+   "n": 246
+  }
+ },
+ "expiry_tue_halfspread_frac": {
+  "entry": {
+   "median": 0.00128,
+   "iqr": [
+    0.00116,
+    0.00144
+   ],
+   "p90": 0.00153,
+   "n": 40
+  },
+  "midday": {
+   "median": 0.00138,
+   "iqr": [
+    0.00103,
+    0.00168
+   ],
+   "p90": 0.00191,
+   "n": 1054
+  },
+  "last15": {
+   "median": 0.00336,
+   "iqr": [
+    0.0024,
+    0.00635
+   ],
+   "p90": 0.02804,
+   "n": 62
+  }
+ },
+ "depth": {
+  "entry_bidqty_lt_75_frac": 0.08,
+  "allsession_askqty_lt_75_frac": 0.062,
+  "lot": 75,
+  "note": "L1-only; when <lot we can flag but not walk depth"
+ },
+ "notes": {
+  "last15_fraction_inflated": "near expiry ATM premium collapses so the FRACTIONAL half-spread explodes while rupee cost stays ~a tick; using it for the square-off is conservative and immaterial (<0.03 PF)",
+  "stop_fill_base": "stops fire INTRADAY -> stop base = midday half-spread, not last15"
+ }
+}

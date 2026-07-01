@@ -1,0 +1,168 @@
+{
+ "v0_gate": {
+  "reproduces_gen6": true,
+  "tolerance": 0.0005,
+  "curve": {
+   "1x": {
+    "entry_slip": 0.01,
+    "stop_slip": 0.025,
+    "exit_slip": 0.01,
+    "fenced_pf": 1.466,
+    "holdout_pf": 1.534,
+    "fenced_n": 218,
+    "holdout_n": 40
+   },
+   "2x": {
+    "entry_slip": 0.02,
+    "stop_slip": 0.05,
+    "exit_slip": 0.02,
+    "fenced_pf": 1.251,
+    "holdout_pf": 1.299,
+    "fenced_n": 218,
+    "holdout_n": 40
+   },
+   "3x": {
+    "entry_slip": 0.03,
+    "stop_slip": 0.07500000000000001,
+    "exit_slip": 0.03,
+    "fenced_pf": 1.084,
+    "holdout_pf": 1.115,
+    "fenced_n": 218,
+    "holdout_n": 40
+   }
+  }
+ },
+ "measured_halfspread_used": {
+  "entry": 0.00128,
+  "squareoff": 0.00336,
+  "stop_base_intraday": 0.00138
+ },
+ "stop_drift_band": [
+  0.0,
+  0.02,
+  0.05,
+  0.11,
+  0.15
+ ],
+ "band_semantics": "STRESS band, NOT a measurement. Clean-book detection-lag drift on the 2 real stop days is ~0% (-1.15% / +1.61%); the band spans to the gate-breach region for honesty. central=5% is a stress midpoint.",
+ "central_drift_stress": 0.05,
+ "measured": {
+  "drift_0.0": {
+   "entry_slip": 0.00128,
+   "exit_slip": 0.00336,
+   "stop_slip": 0.00138,
+   "fenced_pf": 1.722,
+   "fenced_net": 88907,
+   "fenced_dd": -10635,
+   "fenced_win": 0.394,
+   "holdout_pf": 1.814,
+   "holdout_net": 37504,
+   "holdout_n": 40,
+   "fenced_n": 218,
+   "per_year_pf": {
+    "2021": 1.256,
+    "2022": 1.337,
+    "2023": 1.808,
+    "2024": 2.194,
+    "2025": 1.891,
+    "2026": 1.407
+   }
+  },
+  "drift_0.02": {
+   "entry_slip": 0.00128,
+   "exit_slip": 0.00336,
+   "stop_slip": 0.02138,
+   "fenced_pf": 1.57,
+   "fenced_net": 77031,
+   "fenced_dd": -12269,
+   "fenced_win": 0.394,
+   "holdout_pf": 1.653,
+   "holdout_net": 33028,
+   "holdout_n": 40,
+   "fenced_n": 218,
+   "per_year_pf": {
+    "2021": 1.149,
+    "2022": 1.217,
+    "2023": 1.65,
+    "2024": 1.998,
+    "2025": 1.726,
+    "2026": 1.283
+   }
+  },
+  "drift_0.05": {
+   "entry_slip": 0.00128,
+   "exit_slip": 0.00336,
+   "stop_slip": 0.05138,
+   "fenced_pf": 1.387,
+   "fenced_net": 59217,
+   "fenced_dd": -14719,
+   "fenced_win": 0.394,
+   "holdout_pf": 1.459,
+   "holdout_net": 26313,
+   "holdout_n": 40,
+   "fenced_n": 218,
+   "per_year_pf": {
+    "2021": 1.018,
+    "2022": 1.073,
+    "2023": 1.459,
+    "2024": 1.761,
+    "2025": 1.526,
+    "2026": 1.134
+   }
+  },
+  "drift_0.11": {
+   "entry_slip": 0.00128,
+   "exit_slip": 0.00336,
+   "stop_slip": 0.11138,
+   "fenced_pf": 1.125,
+   "fenced_net": 23588,
+   "fenced_dd": -20782,
+   "fenced_win": 0.394,
+   "holdout_pf": 1.182,
+   "holdout_net": 12885,
+   "holdout_n": 40,
+   "fenced_n": 218,
+   "per_year_pf": {
+    "2021": 0.829,
+    "2022": 0.867,
+    "2023": 1.185,
+    "2024": 1.425,
+    "2025": 1.238,
+    "2026": 0.92
+   }
+  },
+  "drift_0.15": {
+   "entry_slip": 0.00128,
+   "exit_slip": 0.00336,
+   "stop_slip": 0.15138,
+   "fenced_pf": 0.999,
+   "fenced_net": -165,
+   "fenced_dd": -25907,
+   "fenced_win": 0.394,
+   "holdout_pf": 1.049,
+   "holdout_net": 3932,
+   "holdout_n": 40,
+   "fenced_n": 218,
+   "per_year_pf": {
+    "2021": 0.738,
+    "2022": 0.769,
+    "2023": 1.053,
+    "2024": 1.264,
+    "2025": 1.1,
+    "2026": 0.817
+   }
+  }
+ },
+ "headline": {
+  "spread_only_fenced_pf": 1.722,
+  "spread_only_holdout_pf": 1.814,
+  "central_stress_fenced_pf": 1.387,
+  "central_stress_holdout_pf": 1.459,
+  "note": "entry/exit measured fills alone IMPROVE the edge vs gen6 1.466/1.534; overall survival is CONDITIONAL on stop-continuation drift (n=2, unconstrained); go-forward read = Tue-era HOLDOUT column."
+ },
+ "pre_reg_gate": {
+  "rule": "fenced PF>=1.10 continue-1-lot; <1.0 stop-rethink",
+  "verdict": "CONTINUE (holds across the whole stress band 0-11%; breaches only at ~11.5% drift, breakeven ~15%)",
+  "PRELIMINARY": "stop-drift calibration rests on n=2 expiry Tue; NOT a trading decision; finalize at ~5+ stop days"
+ }
+}

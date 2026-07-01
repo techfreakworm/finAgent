@@ -1,0 +1,155 @@
+{
+ "note": "real-book replay on the 2 collected expiry Tue, on BOTH the collector-ATM and the live-traded strike. entry=real bid, marks=real mid, stop on combined mid>=1.25x, exit=real ask +1min lag. n=2 ILLUSTRATIVE \u2014 cross-check only, NOT evidence that live losses were overstated (strike + entry-basis + stale live prints confound a direct net-vs-net comparison; see decomposition).",
+ "cleanbook_lag_drift_summary": "the honest measured stop-continuation on the clean book (combined-mid trigger, +1min): see per-day trigger fields",
+ "days": [
+  {
+   "date": "2026-06-23",
+   "collector_atm": 24050.0,
+   "live_strike": 24100.0,
+   "entry_t": "09:16",
+   "replays": {
+    "24050": {
+     "strike": 24050.0,
+     "entry_mid": 88.23,
+     "credit_at_bid": 88.15,
+     "stop_level_mid": 110.28,
+     "trigger_t": "12:07",
+     "cleanbook_lag_drift": -0.0115,
+     "exit_t": "12:08",
+     "exit_reason": "stop",
+     "exit_fill_at_ask": 110.1,
+     "per_leg": {
+      "CE": {
+       "entry_bid": 46.6,
+       "exit_ask": 16.75
+      },
+      "PE": {
+       "entry_bid": 41.55,
+       "exit_ask": 93.35
+      }
+     },
+     "costs": 7.9,
+     "net": -1434.6,
+     "lot": 65,
+     "role": "collector_atm"
+    },
+    "24100": {
+     "strike": 24100.0,
+     "entry_mid": 97.65,
+     "credit_at_bid": 97.55,
+     "stop_level_mid": 122.06,
+     "trigger_t": "11:57",
+     "cleanbook_lag_drift": 0.0526,
+     "exit_t": "11:58",
+     "exit_reason": "stop",
+     "exit_fill_at_ask": 139.4,
+     "per_leg": {
+      "CE": {
+       "entry_bid": 26.35,
+       "exit_ask": 10.15
+      },
+      "PE": {
+       "entry_bid": 71.2,
+       "exit_ask": 129.25
+      }
+     },
+     "costs": 9.2,
+     "net": -2729.4,
+     "lot": 65,
+     "role": "live_strike"
+    }
+   },
+   "live_paper": {
+    "net": -3547.8,
+    "entry_sum": 86.95,
+    "exit_sum": 139.85,
+    "detail": {
+     "CE": {
+      "entry": 20.95,
+      "exit": 15.7,
+      "net": 291.0,
+      "reason": "strategy_exit",
+      "exit_t": "11:56",
+      "slippage_paid": 650.0
+     },
+     "PE": {
+      "entry": 66.0,
+      "exit": 124.15,
+      "net": -3838.8,
+      "reason": "strategy_exit",
+      "exit_t": "11:56",
+      "slippage_paid": 650.0
+     }
+    }
+   },
+   "decomposition_live_strike": {
+    "entry_credit_delta_rs": 689.0,
+    "exit_price_delta_rs": 29.2,
+    "live_flat_slippage_constant_rs": 1300.0,
+    "note": "entry delta = replay bid-sum vs live entry prints (live REST 1-min prints were stale-low on fast opens); exit delta = live exit vs replay ask (they reconcile closely); the flat 650/leg is a constant the paper engine subtracts, never measured"
+   }
+  },
+  {
+   "date": "2026-06-30",
+   "collector_atm": 23950.0,
+   "live_strike": 23950.0,
+   "entry_t": "09:16",
+   "replays": {
+    "23950": {
+     "strike": 23950.0,
+     "entry_mid": 123.35,
+     "credit_at_bid": 123.25,
+     "stop_level_mid": 154.19,
+     "trigger_t": "09:46",
+     "cleanbook_lag_drift": 0.0161,
+     "exit_t": "09:47",
+     "exit_reason": "stop",
+     "exit_fill_at_ask": 157.5,
+     "per_leg": {
+      "CE": {
+       "entry_bid": 69.85,
+       "exit_ask": 35.6
+      },
+      "PE": {
+       "entry_bid": 53.4,
+       "exit_ask": 121.9
+      }
+     },
+     "costs": 11.1,
+     "net": -2237.3,
+     "lot": 65,
+     "role": "collector_atm+live_strike"
+    }
+   },
+   "live_paper": {
+    "net": -3155.2,
+    "entry_sum": 113.2,
+    "exit_sum": 160.0,
+    "detail": {
+     "PE": {
+      "entry": 52.45,
+      "exit": 113.4,
+      "net": -4018.8,
+      "reason": "strategy_exit",
+      "exit_t": "09:33",
+      "slippage_paid": 650.0
+     },
+     "CE": {
+      "entry": 60.75,
+      "exit": 46.6,
+      "net": 863.6,
+      "reason": "strategy_exit",
+      "exit_t": "09:34",
+      "slippage_paid": 650.0
+     }
+    }
+   },
+   "decomposition_live_strike": {
+    "entry_credit_delta_rs": 653.2,
+    "exit_price_delta_rs": 162.5,
+    "live_flat_slippage_constant_rs": 1300.0,
+    "note": "entry delta = replay bid-sum vs live entry prints (live REST 1-min prints were stale-low on fast opens); exit delta = live exit vs replay ask (they reconcile closely); the flat 650/leg is a constant the paper engine subtracts, never measured"
+   }
+  }
+ ]
+}
