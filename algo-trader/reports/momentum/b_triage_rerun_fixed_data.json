@@ -1,0 +1,430 @@
+{
+ "meta": {
+  "protocol": "reports/momentum_prereg.md \u00a7B (survivorship-CONTAMINATED upper-bound scout)",
+  "date_run": "2026-07-02",
+  "outcome_space": "KILL or NOT-KILLED; NOT-KILLED != validated (optimistic bias); no DEPLOY possible under any outcome.",
+  "grid": {
+   "J": [
+    6,
+    12
+   ],
+   "skip": 1,
+   "hold": 1
+  },
+  "friction_round_trip": 0.004,
+  "split": {
+   "is_end": "2025-03-31",
+   "holdout": [
+    "2025-04-01",
+    "2026-06-11"
+   ],
+   "split_by": "formation month-end t"
+  },
+  "gate_thresholds": {
+   "ir_min": 0.5,
+   "nw_t_min": 2.5,
+   "maxdd_max": 0.25,
+   "dsr_trials": 2
+  }
+ },
+ "universe": {
+  "n": 50,
+  "names": [
+   "ADANIPORTS",
+   "APOLLOHOSP",
+   "ASIANPAINT",
+   "AXISBANK",
+   "BAJAJ-AUTO",
+   "BAJAJFINSV",
+   "BAJFINANCE",
+   "BEL",
+   "BHARTIARTL",
+   "BPCL",
+   "BRITANNIA",
+   "CIPLA",
+   "COALINDIA",
+   "DRREDDY",
+   "EICHERMOT",
+   "ETERNAL",
+   "GRASIM",
+   "HCLTECH",
+   "HDFCBANK",
+   "HDFCLIFE",
+   "HEROMOTOCO",
+   "HINDALCO",
+   "HINDUNILVR",
+   "ICICIBANK",
+   "INDUSINDBK",
+   "INFY",
+   "ITC",
+   "JSWSTEEL",
+   "KOTAKBANK",
+   "LT",
+   "M&M",
+   "MARUTI",
+   "NESTLEIND",
+   "NTPC",
+   "ONGC",
+   "POWERGRID",
+   "RELIANCE",
+   "SBILIFE",
+   "SBIN",
+   "SHRIRAMFIN",
+   "SUNPHARMA",
+   "TATACONSUM",
+   "TATAMOTORS",
+   "TATASTEEL",
+   "TCS",
+   "TECHM",
+   "TITAN",
+   "TRENT",
+   "ULTRACEMCO",
+   "WIPRO"
+  ],
+  "note": "TODAY's cached survivors applied historically; includes a few names since dropped from NIFTY-50 (same contamination direction). Excluded: indices/derivs/ETF."
+ },
+ "qc_log": [
+  {
+   "sym": "ADANIPORTS",
+   "date": "2023-01-27",
+   "ret": -0.1533,
+   "next_ret": -0.005,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "ADANIPORTS",
+   "date": "2023-02-01",
+   "ret": -0.1788,
+   "next_ret": -0.0888,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "ADANIPORTS",
+   "date": "2023-12-05",
+   "ret": 0.1534,
+   "next_ret": 0.0079,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "ADANIPORTS",
+   "date": "2024-06-04",
+   "ret": -0.217,
+   "next_ret": 0.0779,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "BEL",
+   "date": "2024-06-04",
+   "ret": -0.1952,
+   "next_ret": 0.0084,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "ETERNAL",
+   "date": "2022-01-24",
+   "ret": -0.1962,
+   "next_ret": 0.0996,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "ETERNAL",
+   "date": "2022-08-02",
+   "ret": 0.1946,
+   "next_ret": -0.0036,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "INDUSINDBK",
+   "date": "2024-10-25",
+   "ret": -0.1892,
+   "next_ret": 0.0187,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "INDUSINDBK",
+   "date": "2025-03-11",
+   "ret": -0.2717,
+   "next_ret": 0.0433,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "ONGC",
+   "date": "2024-06-04",
+   "ret": -0.162,
+   "next_ret": 0.042,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "TATAMOTORS",
+   "date": "2021-10-13",
+   "ret": 0.2045,
+   "next_ret": -0.0183,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  },
+  {
+   "sym": "TATAMOTORS",
+   "date": "2025-10-14",
+   "ret": -0.4059,
+   "next_ret": -0.008,
+   "class": "TATAMOTORS_demerger_2025-10",
+   "action": "name excluded from formation+holding from 2025-09 onward (handled at schedule level)"
+  },
+  {
+   "sym": "TRENT",
+   "date": "2024-02-07",
+   "ret": 0.1934,
+   "next_ret": 0.0584,
+   "class": "real_market_move_kept",
+   "action": "explained market-event move -> KEPT as a genuine adjusted-price return (not a data artifact)"
+  }
+ ],
+ "per_config": {
+  "6": {
+   "is": {
+    "n": 39,
+    "ir_gross": 0.5523,
+    "ir_net1": 0.3579,
+    "nw_t_gross": 0.7746,
+    "mean_active_gross": 0.004159,
+    "mean_active_net1": 0.002692,
+    "mean_active_net2": 0.001226,
+    "mean_net2_positive": true,
+    "sleeve_maxdd_net1": 0.2117,
+    "mean_turnover": 0.3667,
+    "cum_sleeve_net1": 0.8581,
+    "cum_active_gross": 0.162199,
+    "dsr": {
+     "per_period_sharpe": 0.1594,
+     "dsr_prob": 0.8311,
+     "sr_star": 0.0,
+     "adj_sharpe_SR_minus_SRstar": 0.1594,
+     "gate_adj_sharpe_positive": true,
+     "dsr_vs_0.95": false,
+     "skew": -0.2627,
+     "excess_kurt": -0.5152
+    }
+   },
+   "is_gate": {
+    "g1_ir>=0.5": true,
+    "g2_nwt>=2.5_and_adjSharpe>0": false,
+    "g3_net_positive_2x": true,
+    "g4_maxdd<=25%": true,
+    "passes_is_gate": false
+   },
+   "full": {
+    "n": 53,
+    "ir_gross": 0.2889,
+    "ir_net1": 0.0799,
+    "nw_t_gross": 0.4872,
+    "mean_active_gross": 0.002046,
+    "mean_active_net1": 0.000567,
+    "mean_active_net2": -0.000913,
+    "mean_net2_positive": false,
+    "sleeve_maxdd_net1": 0.2198,
+    "mean_turnover": 0.3698,
+    "cum_sleeve_net1": 0.7863,
+    "cum_active_gross": 0.108429,
+    "dsr": {
+     "per_period_sharpe": 0.0834,
+     "dsr_prob": 0.7252,
+     "sr_star": 0.0,
+     "adj_sharpe_SR_minus_SRstar": 0.0834,
+     "gate_adj_sharpe_positive": true,
+     "dsr_vs_0.95": false,
+     "skew": -0.0926,
+     "excess_kurt": -0.5624
+    }
+   },
+   "n_holdout": 14,
+   "wml_full": {
+    "n": 53,
+    "mean_monthly": 0.003335,
+    "nw_t": 0.4836,
+    "ann_ir": 0.2561,
+    "bar_t>=2.0": false
+   },
+   "wml_is": {
+    "n": 39,
+    "mean_monthly": 0.002659,
+    "nw_t": 0.2897,
+    "ann_ir": 0.1889,
+    "bar_t>=2.0": false
+   },
+   "monotonicity": {
+    "quintile_mean_holding_return": {
+     "Q5": 0.013694,
+     "Q4": 0.012403,
+     "Q3": 0.007039,
+     "Q2": 0.014996,
+     "Q1": 0.010574
+    },
+    "strict_monotonic_Q5>..>Q1": false,
+    "top>bottom": true
+   },
+   "vol_scaled_robustness": {
+    "is_ann_ir_vol_scaled": 0.523,
+    "is_n": 39
+   }
+  },
+  "12": {
+   "is": {
+    "n": 33,
+    "ir_gross": 0.9569,
+    "ir_net1": 0.8175,
+    "nw_t_gross": 1.2755,
+    "mean_active_gross": 0.006772,
+    "mean_active_net1": 0.005803,
+    "mean_active_net2": 0.004833,
+    "mean_net2_positive": true,
+    "sleeve_maxdd_net1": 0.2301,
+    "mean_turnover": 0.2424,
+    "cum_sleeve_net1": 0.9865,
+    "cum_active_gross": 0.223492,
+    "dsr": {
+     "per_period_sharpe": 0.2762,
+     "dsr_prob": 0.9343,
+     "sr_star": 0.0,
+     "adj_sharpe_SR_minus_SRstar": 0.2762,
+     "gate_adj_sharpe_positive": true,
+     "dsr_vs_0.95": false,
+     "skew": -0.0485,
+     "excess_kurt": 1.1229
+    }
+   },
+   "is_gate": {
+    "g1_ir>=0.5": true,
+    "g2_nwt>=2.5_and_adjSharpe>0": false,
+    "g3_net_positive_2x": true,
+    "g4_maxdd<=25%": true,
+    "passes_is_gate": false
+   },
+   "full": {
+    "n": 47,
+    "ir_gross": 0.5779,
+    "ir_net1": 0.4246,
+    "nw_t_gross": 0.9576,
+    "mean_active_gross": 0.003862,
+    "mean_active_net1": 0.002849,
+    "mean_active_net2": 0.001836,
+    "mean_net2_positive": true,
+    "sleeve_maxdd_net1": 0.2301,
+    "mean_turnover": 0.2532,
+    "cum_sleeve_net1": 0.9406,
+    "cum_active_gross": 0.181505,
+    "dsr": {
+     "per_period_sharpe": 0.1668,
+     "dsr_prob": 0.8691,
+     "sr_star": 0.0,
+     "adj_sharpe_SR_minus_SRstar": 0.1668,
+     "gate_adj_sharpe_positive": true,
+     "dsr_vs_0.95": false,
+     "skew": 0.0274,
+     "excess_kurt": 1.0577
+    }
+   },
+   "n_holdout": 14,
+   "wml_full": {
+    "n": 47,
+    "mean_monthly": 0.005581,
+    "nw_t": 0.9014,
+    "ann_ir": 0.4776,
+    "bar_t>=2.0": false
+   },
+   "wml_is": {
+    "n": 33,
+    "mean_monthly": 0.00722,
+    "nw_t": 0.8361,
+    "ann_ir": 0.5625,
+    "bar_t>=2.0": false
+   },
+   "monotonicity": {
+    "quintile_mean_holding_return": {
+     "Q5": 0.016559,
+     "Q4": 0.011532,
+     "Q3": 0.010173,
+     "Q2": 0.01493,
+     "Q1": 0.0104
+    },
+    "strict_monotonic_Q5>..>Q1": false,
+    "top>bottom": true
+   },
+   "vol_scaled_robustness": {
+    "is_ann_ir_vol_scaled": 0.9014,
+    "is_n": 33
+   }
+  }
+ },
+ "is_winner_selection": {
+  "passing_is_gate": [],
+  "winner_J": null,
+  "rule": "higher IS ann IR among J passing gates 1-4; if none pass -> KILL, no holdout."
+ },
+ "holdout": null,
+ "hedge_correlation": {
+  "n_shared": 199,
+  "n_straddle_days": 258,
+  "pearson": 0.0878,
+  "spearman": 0.113,
+  "E[mom|straddle_worst_quartile]": -0.000849,
+  "straddle_worst_quartile_threshold_net": -1082.8,
+  "hedge_hope_corr<=+0.2": true,
+  "hedge_hope_tail>=0": false,
+  "NOTE": "informational only; B-triage can never DEPLOY (contaminated)."
+ },
+ "sanity_checks": {
+  "hand_verified_formation_returns": [
+   {
+    "sym": "M&M",
+    "t": "2022-07",
+    "form_start": "2021-06",
+    "form_end": "2022-06",
+    "raw_p_start": 781.0,
+    "raw_p_end": 1091.0,
+    "raw_formation_return": 0.396927,
+    "pipeline_formation_return": 0.396927,
+    "match": true
+   },
+   {
+    "sym": "M&M",
+    "t": "2022-08",
+    "form_start": "2021-07",
+    "form_end": "2022-07",
+    "raw_p_start": 744.75,
+    "raw_p_end": 1162.65,
+    "raw_formation_return": 0.561128,
+    "pipeline_formation_return": 0.561128,
+    "match": true
+   }
+  ],
+  "sleeve_benchmark_identical_calendar": true,
+  "no_look_ahead_month_ordering": true,
+  "eligible_name_counts": {
+   "J6": {
+    "n_periods": 53,
+    "months_below_50": 10,
+    "min_eligible": 47,
+    "max_eligible": 50
+   },
+   "J12": {
+    "n_periods": 47,
+    "months_below_50": 10,
+    "min_eligible": 47,
+    "max_eligible": 50
+   }
+  },
+  "eligibility_rule": "a name needs a monthly-last close for EVERY month in [t-1-J .. t+1] (rankable + holdable) to enter a rebalance; TATAMOTORS excluded from t>=2025-09. Sub-50 months are due to late-listed names lacking full formation history (e.g. ETERNAL/Zomato) and the TATAMOTORS late exclusion -- NOT data drops (no >15% move was dropped)."
+ },
+ "verdict": "KILL",
+ "verdict_reason": "NEITHER J passed the IS gate (gates 1-4) -> KILL; holdout NOT run (per frozen rule)."
+}

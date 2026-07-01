@@ -23,7 +23,7 @@ IST = ZoneInfo("Asia/Kolkata")
 PROJECT = Path(__file__).resolve().parent.parent.parent
 CACHE = PROJECT / "data" / "cache"
 
-_NIFTY50_MAP_PATH = "/home/ubuntu/finAgent/research_scratchpad/dhan_nifty50_mapping.json"
+_NIFTY50_MAP_PATH = "/home/ubuntu/projects/algo-trader/data/reference/nifty50_secid_map.json"
 
 # Gen-1 sweep universe: 2 indices (futures cost model) + 10 most-liquid names
 SWEEP_EQUITIES = ["RELIANCE", "HDFCBANK", "ICICIBANK", "INFY", "TCS",

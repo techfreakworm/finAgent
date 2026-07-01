@@ -42,7 +42,7 @@ DECISION_MINS: np.ndarray = np.arange(9 * 60 + 20, 15 * 60 + 26, 5, dtype=np.int
 N_DEC: int = len(DECISION_MINS)  # 74
 
 NIFTY50_MAP_PATH = Path(
-    "/home/ubuntu/finAgent/research_scratchpad/dhan_nifty50_mapping.json"
+    "/home/ubuntu/projects/algo-trader/data/reference/nifty50_secid_map.json"
 )
 EXCLUDE: frozenset[str] = frozenset({"NIFTY_50", "INDIA_VIX", "NIFTYBEES"})
 

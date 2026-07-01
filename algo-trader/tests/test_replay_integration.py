@@ -6,7 +6,9 @@ Tests:
   (B) paper_trade._run_replay runs a full stored session via ReplayDriver →
       LiveBreadth → PaperExecutors (paper + paper-minlot) for 2026-06-10 and
       finishes without error; EOD HTML report is written.
-  (C) The breadth at 10:15 IST on 2026-06-10 is 0.32 (below the 0.72 threshold),
+  (C) The breadth at 10:15 IST on 2026-06-10 is 0.34 (below the 0.72 threshold;
+      gold 0.32→0.34 on 2026-07-02 after the secid-map fix swapped impostor
+      SPARC/SATIN for real SUNPHARMA/ITC — a one-name breadth shift),
       so BreadthRider generates 0 trades — verified both through the executor
       trade_records and the EOD report.
 """
@@ -151,7 +153,7 @@ def test_live_breadth_matches_parquet() -> None:
 def test_replay_end_to_end(tmp_path: Path) -> None:
     """(B) Full replay session completes; (C) BreadthRider generates 0 trades.
 
-    Breadth at 10:15 on 2026-06-10 is 0.32 — below the 0.72 threshold and
+    Breadth at 10:15 on 2026-06-10 is 0.34 — below the 0.72 threshold and
     above 0.28 (1 - 0.72), so no signal is generated.
     EOD HTML report is written to the tmp_path out_dir.
     """
@@ -181,13 +183,13 @@ def test_replay_end_to_end(tmp_path: Path) -> None:
 
     assert len(executors) == 2, "Expected 2 executor instances"
 
-    # (C): BreadthRider generates 0 trades (breadth 0.32 at 10:15 < 0.72 threshold)
+    # (C): BreadthRider generates 0 trades (breadth 0.34 at 10:15 < 0.72 threshold)
     for exec_ in executors:
         assert isinstance(exec_, PaperExecutor)
         trades = exec_.trade_records
         assert len(trades) == 0, (
             f"Expected 0 trades for {exec_.account_id} "
-            f"(breadth=0.32 at 10:15 does not meet thr=0.72), got {len(trades)}"
+            f"(breadth=0.34 at 10:15 does not meet thr=0.72), got {len(trades)}"
         )
 
     # Sync and generate EOD report
@@ -241,7 +243,11 @@ def test_replay_end_to_end(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def test_breadth_at_decision_time() -> None:
-    """Spot-check: at 10:15 IST on 2026-06-10, pct_above_vwap ≈ 0.32.
+    """Spot-check: at 10:15 IST on 2026-06-10, pct_above_vwap ≈ 0.34.
+
+    (Gold 0.32→0.34 on 2026-07-02: secid-map fix replaced impostor SPARC/SATIN
+    with real SUNPHARMA/ITC; one of the two sits on the other side of VWAP at
+    this minute — exactly a one-name 0.02 shift.)
 
     This is below the 0.72 BreadthRider threshold and above 0.28 (bear
     threshold), so the frozen cell generates no signal — expected.
@@ -259,8 +265,8 @@ def test_breadth_at_decision_time() -> None:
     assert snap is not None, "No breadth snapshot at 10:15 IST"
     pct, n_stocks, net = snap
     assert n_stocks == 50, f"Expected 50 stocks, got {n_stocks}"
-    # Parquet says pct_above_vwap = 0.32 at 10:15
-    assert abs(pct - 0.32) <= 0.02, f"pct_above_vwap at 10:15: {pct:.4f} != ~0.32"
+    # Parquet says pct_above_vwap = 0.34 at 10:15 (post secid-map fix)
+    assert abs(pct - 0.34) <= 0.02, f"pct_above_vwap at 10:15: {pct:.4f} != ~0.34"
     # Below both thresholds: no BreadthRider signal
     assert pct < 0.72, "Should be below bullish threshold"
     assert pct > 0.28, "Should be above bearish threshold (1 - 0.72)"

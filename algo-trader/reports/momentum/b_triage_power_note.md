@@ -152,3 +152,30 @@ prerequisite** (§9). This is **optional and low-priority** relative to the prim
 **Frozen decision artifacts (unchanged):** `reports/momentum/b_triage_eval.json`,
 `reports/momentum/b_triage_summary.md`. Backtest engine: `scripts/momentum_b_triage.py`
 (untouched). Verdict: **KILL**.
+
+---
+
+## POST-HOC ADDENDUM 2 (2026-07-02): data-integrity robustness re-run
+
+After the B-triage, the flagged SUNPHARMA corruption was root-caused: the legacy
+finAgent secid map had **SUNPHARMA→14788 (= SPARC)** and **ITC→10453 (= SATIN)** —
+two of the 50 cached series were entirely different (mid-cap) instruments, faithfully
+fetched under the wrong names. Both were re-fetched with the authoritative NSE-EQ ids
+(3351 / 1660; verified ranges SUNPHARMA ₹664→1,916, ITC ₹197→527; zero |ret|>15%
+events), the canonical map moved into the repo (`data/reference/nifty50_secid_map.json`),
+and the frozen `momentum_b_triage.py` was re-run ONCE on the corrected panel as a
+labeled robustness check (NOT a re-decision — the decision stands on the pre-registered
+run):
+
+| config | pre-reg run (impostor data) | corrected-data re-run |
+|---|---|---|
+| J=6  | IR 0.603, NW t 0.885 | IR 0.552, NW t 0.775 |
+| J=12 | IR 0.746, NW t 0.986 | IR 0.957, NW t 1.276 |
+| verdict | KILL (g2 fails both) | **KILL (g2 fails both, identical gate pattern)** |
+
+Reading: the impostor series were immaterial-to-mildly-pessimistic (J=12 point estimate
+improves with real data), consistent with the panel's contamination-direction analysis.
+The significance-gate outcome — and therefore the KILL — is unchanged. Full re-run
+artifact: `reports/momentum/b_triage_rerun_fixed_data.json`. The breadth series
+(`_BREADTH/5m/breadth.parquet`) was also rebuilt from the corrected cache
+(gold-match tests 15/15 green).

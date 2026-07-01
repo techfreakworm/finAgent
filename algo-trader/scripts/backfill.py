@@ -26,7 +26,7 @@ TODAY = datetime.now(IST).date()
 START = TODAY - timedelta(days=5 * 365)          # API depth limit: 5 years
 WINDOW = timedelta(days=89)
 
-NIFTY50_MAP = json.load(open("/home/ubuntu/finAgent/research_scratchpad/dhan_nifty50_mapping.json"))
+NIFTY50_MAP = json.load(open("/home/ubuntu/projects/algo-trader/data/reference/nifty50_secid_map.json"))
 
 INDICES = [
     FetchSpec("NIFTY", "13", "IDX_I", "INDEX"),

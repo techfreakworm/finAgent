@@ -30,7 +30,7 @@ import pytest
 PROJECT = Path(__file__).resolve().parent.parent
 CACHE = PROJECT / "data" / "cache"
 BREADTH_PARQUET = CACHE / "_BREADTH" / "5m" / "breadth.parquet"
-NIFTY50_MAP = Path("/home/ubuntu/finAgent/research_scratchpad/dhan_nifty50_mapping.json")
+NIFTY50_MAP = Path("/home/ubuntu/projects/algo-trader/data/reference/nifty50_secid_map.json")
 
 IST = ZoneInfo("Asia/Kolkata")
 
