@@ -322,6 +322,7 @@ def _build_executor(
         Only used for 'options' expression accounts.
     """
     from algotrader.backtest.costs import DhanCosts
+    from algotrader.backtest.engine import MeasuredOptionSlippage
     from algotrader.data.instruments import NIFTY_FUT, BANKNIFTY_FUT
     from algotrader.paper.executor import PaperExecutor, MinLotOverrideEngine, ZerodteFixedLotEngine
     from algotrader.paper.store import PaperStore
@@ -412,11 +413,22 @@ def _build_executor(
     db_path = store_path or (_PROJECT_ROOT / "data" / f"paper_{account_id}.db")
     store = PaperStore(db_path=db_path)
 
+    # ── Slippage model ────────────────────────────────────────────────
+    # Options / short-straddle accounts price option legs with the FG-3
+    # measured half-spread model (flat-650 replaced 2026-07-02); it delegates
+    # non-option instruments (the underlying futures signal bar) to
+    # DefaultSlippage.  Futures-only accounts keep DefaultSlippage (they never
+    # receive option bars), so their fills are unchanged.
+    slippage_model = None
+    if expression in ("options", "zerodte_straddle"):
+        slippage_model = MeasuredOptionSlippage()
+
     return PaperExecutor(
         account_id=account_id,
         strategies=strategies,
         risk_engine=risk_engine,
         cost_model=DhanCosts(),
+        slippage_model=slippage_model,
         store=store,
     )
 

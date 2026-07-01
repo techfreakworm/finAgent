@@ -48,7 +48,7 @@ from algotrader.core import (
     Strategy,
 )
 from algotrader.risk.engine import IntradayRiskEngine, RiskParams
-from tests.fixtures.synthetic import TEST_INSTRUMENT
+from tests.fixtures.synthetic import NIFTY_FUT_INSTRUMENT, TEST_INSTRUMENT
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -862,6 +862,187 @@ class TestDefaultSlippage:
             "entry_slippage must return the same value for the same bar history "
             "regardless of how that history was obtained"
         )
+
+
+# ===========================================================================
+# MeasuredOptionSlippage unit tests (FG-3 measured fill model)
+# ===========================================================================
+
+class TestMeasuredOptionSlippage:
+    """FG-3 half-spread option fill model (replaces flat ₹650/leg 2026-07-02).
+
+    Reference numbers (lot=75, premium≈60):
+      entry state   0.0013 → offset 0.078, round-trip ₹11.70
+      intraday      0.0014 → offset 0.084, round-trip ₹12.60
+      rupee floor   max(hsf×price, 0.025) → 0.025 for tiny premiums
+    """
+
+    _OPT_DATE = date(2026, 6, 30)   # a NIFTY weekly-expiry Tuesday
+
+    @staticmethod
+    def _opt(symbol: str = "NIFTY-Jun2026-24100-CE") -> Instrument:
+        """A NIFTY option leg (symbol ends -CE/-PE, tick 0.05)."""
+        return Instrument(
+            symbol=symbol,
+            security_id="opt1",
+            segment=Segment.NSE_FNO,
+            tick_size=0.05,
+            is_derivative=True,
+            underlying="NIFTY",
+        )
+
+    def _bar_closing_at(
+        self, h: int, m: int, close: float, instrument: Instrument
+    ) -> Bar:
+        """A 1-min bar whose ts_close is h:m (== the fill bar's open time).
+
+        The fill happens at the NEXT bar's open; MeasuredOptionSlippage reads
+        the state from bar_history[-1].ts_close, so this bar's close time is
+        the fill time-of-day.  ts_open = ts_close − 1 min (rollover-safe).
+        """
+        ts_open = _ts(h, m) - timedelta(minutes=1)
+        return _bar(ts_open, close, close, close, close, instrument=instrument)
+
+    # --- (a) entry window: 0.0013 fraction, floored at 0.025 --------------
+
+    def test_entry_window_fraction(self):
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        slip = MeasuredOptionSlippage()
+        opt = self._opt()
+        # Fill bar opens 09:20 → prior bar closes 09:20 → entry window (t<09:30).
+        offset = slip.entry_slippage(opt, [self._bar_closing_at(9, 20, 60.0, opt)])
+        assert offset == pytest.approx(0.0013 * 60.0)   # 0.078, above floor
+        assert offset > 0.025
+
+    # --- (b) intraday state: 0.0014 fraction ------------------------------
+
+    def test_intraday_fraction(self):
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        slip = MeasuredOptionSlippage()
+        opt = self._opt()
+        offset = slip.entry_slippage(opt, [self._bar_closing_at(12, 0, 60.0, opt)])
+        assert offset == pytest.approx(0.0014 * 60.0)   # 0.084
+
+    def test_late_state_uses_intraday_fraction_not_inflated_last15(self):
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        slip = MeasuredOptionSlippage()
+        opt = self._opt()
+        # ≥15:00 deliberately keeps 0.0014 (not the inflated last15 fraction).
+        offset = slip.exit_slippage(
+            opt, [self._bar_closing_at(15, 5, 60.0, opt)], ExitReason.STOP
+        )
+        assert offset == pytest.approx(0.0014 * 60.0)
+
+    # --- (c) rupee floor kicks in for tiny premiums -----------------------
+
+    def test_rupee_floor_for_tiny_premium(self):
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        slip = MeasuredOptionSlippage()
+        opt = self._opt()
+        # premium 10 intraday → 0.0014×10 = 0.014 < 0.025 → floored.
+        offset = slip.entry_slippage(opt, [self._bar_closing_at(12, 0, 10.0, opt)])
+        assert offset == pytest.approx(0.025)
+
+    def test_empty_history_returns_rupee_floor(self):
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        slip = MeasuredOptionSlippage()
+        opt = self._opt()
+        # No causal reference price available → best we can do is the floor.
+        assert slip.entry_slippage(opt, []) == pytest.approx(0.025)
+        assert slip.exit_slippage(opt, [], ExitReason.SQUARE_OFF) == pytest.approx(0.025)
+
+    def test_put_leg_also_detected(self):
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        slip = MeasuredOptionSlippage()
+        opt = self._opt("NIFTY-Jun2026-24100-PE")
+        offset = slip.entry_slippage(opt, [self._bar_closing_at(12, 0, 60.0, opt)])
+        assert offset == pytest.approx(0.0014 * 60.0)
+
+    # --- (d) non-option instruments delegate to DefaultSlippage -----------
+
+    def test_futures_delegates_to_default_identically(self):
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        from tests.fixtures.synthetic import trend_day
+        measured = MeasuredOptionSlippage()
+        default = DefaultSlippage()
+        fut = NIFTY_FUT_INSTRUMENT
+        day_bars = trend_day(fut, _SESSION_DATE, seed=7, bar_sigma=20.0)
+        for n in (0, 3, 20, 50):
+            hist = day_bars[:n]
+            assert measured.entry_slippage(fut, hist) == pytest.approx(
+                default.entry_slippage(fut, hist)
+            ), f"futures entry must match DefaultSlippage at n={n}"
+            assert measured.exit_slippage(
+                fut, hist, ExitReason.STOP
+            ) == pytest.approx(default.exit_slippage(fut, hist, ExitReason.STOP))
+
+    def test_equity_delegates_to_default_identically(self):
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        from tests.fixtures.synthetic import trend_day
+        measured = MeasuredOptionSlippage()
+        default = DefaultSlippage()
+        eq = TEST_INSTRUMENT   # is_derivative=False, symbol "TESTSYM"
+        day_bars = trend_day(eq, _SESSION_DATE, seed=11, bar_sigma=1.5)
+        hist = day_bars[:30]
+        assert measured.entry_slippage(eq, hist) == pytest.approx(
+            default.entry_slippage(eq, hist)
+        )
+
+    # --- spread-only default: stop exits carry NO drift -------------------
+
+    def test_default_path_stop_exit_is_pure_spread(self):
+        """Default (live) path: a STOP exit uses the plain time-of-day spread,
+        with no stop-continuation drift baked in (spread-only guarantee)."""
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        slip = MeasuredOptionSlippage()   # stop_drift_frac defaults to 0.0
+        opt = self._opt()
+        hist = [self._bar_closing_at(12, 0, 60.0, opt)]
+        stop_exit = slip.exit_slippage(opt, hist, ExitReason.STOP)
+        entry = slip.entry_slippage(opt, hist)
+        assert stop_exit == pytest.approx(0.0014 * 60.0)
+        assert stop_exit == pytest.approx(entry)   # identical to spread, no drift
+
+    # --- optional research stress toggle ----------------------------------
+
+    def test_stop_drift_toggle_adds_cost_only_on_stop_like_exits(self):
+        """Research-only stop_drift_frac adds an extra adverse cost to STOP/TRAIL
+        exits; entries and non-stop exits stay pure spread."""
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        drift = 0.002
+        slip = MeasuredOptionSlippage(stop_drift_frac=drift)
+        opt = self._opt()
+        hist = [self._bar_closing_at(12, 0, 60.0, opt)]
+        base = 0.0014 * 60.0            # intraday spread
+        # STOP + TRAIL get the extra drift.
+        assert slip.exit_slippage(opt, hist, ExitReason.STOP) == pytest.approx(
+            base + drift * 60.0
+        )
+        assert slip.exit_slippage(opt, hist, ExitReason.TRAIL) == pytest.approx(
+            base + drift * 60.0
+        )
+        # Entry and non-stop exits (square-off, strategy, target) stay spread-only.
+        assert slip.entry_slippage(opt, hist) == pytest.approx(base)
+        for r in (ExitReason.SQUARE_OFF, ExitReason.STRATEGY, ExitReason.TARGET):
+            assert slip.exit_slippage(opt, hist, r) == pytest.approx(base), r
+
+    # --- (e) slippage_paid scale: ~40-60× below the old ₹650 --------------
+
+    def test_slippage_paid_scale_vs_flat_650(self):
+        """A 75-lot NIFTY option round trip at premium ~60 costs ~₹11-17/leg —
+        i.e. ~40-60× below the old flat ₹650 (verifies the accounting path)."""
+        from algotrader.backtest.engine import MeasuredOptionSlippage
+        slip = MeasuredOptionSlippage()
+        opt = self._opt()
+        lot = 75
+        qty = 1
+        entry = slip.entry_slippage(opt, [self._bar_closing_at(12, 0, 60.0, opt)])
+        exit_ = slip.exit_slippage(
+            opt, [self._bar_closing_at(14, 30, 60.0, opt)], ExitReason.STRATEGY
+        )
+        # Same accounting formula as PaperExecutor._close_pos.
+        slippage_paid = (entry + exit_) * qty * lot
+        assert 10.0 <= slippage_paid <= 17.0, slippage_paid
+        assert 40 <= (650.0 / slippage_paid) <= 60
 
 
 # ===========================================================================

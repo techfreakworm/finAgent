@@ -103,6 +103,162 @@ class DefaultSlippage:
 
 
 # ---------------------------------------------------------------------------
+# Measured option slippage (FG-3 forward-collected fill model)
+# ---------------------------------------------------------------------------
+
+def _is_option_symbol(symbol: str) -> bool:
+    """True if *symbol* is an index option leg (ends in -CE / -PE).
+
+    Matches the routing convention used by scripts/paper_trade.py
+    _BarRouter._is_option_bar so the fill model classifies exactly the
+    instruments that are routed to options accounts.  Index futures
+    (e.g. NIFTY-FUT) and equities are NOT options.
+    """
+    return symbol.endswith("-CE") or symbol.endswith("-PE")
+
+
+class MeasuredOptionSlippage:
+    """Half-spread fill model for NIFTY option legs, calibrated from real fills.
+
+    Replaces the old flat behaviour where DefaultSlippage's 0.05×ATR(14) on a
+    1-min ATM option premium series produced ~₹650/leg round-trip (≈8.67 pts on
+    a 75-lot), which is ~40-60× the true ATM cost on calm legs and badly
+    mis-states paper P&L.
+
+    For OPTION instruments (symbol ends in -CE/-PE) the per-side offset is a
+    fraction of the (causal) reference premium, floored at half a tick::
+
+        offset = max(half_spread_frac[state] × reference_price, half_tick)
+
+    where ``state`` is the IST time-of-day of the fill bar and
+    ``reference_price`` is the last close strictly before the fill bar (the
+    causally-available proxy for the fill price — the interface never sees the
+    fill bar itself).  The offset shifts the fill adverse to the trader and
+    feeds slippage_paid = (entry_slip + exit_slip) × qty × lot_size unchanged.
+
+    Time-of-day states (IST):
+      * entry window 09:15-09:29  → 0.0013   (calm open auction just settled)
+      * intraday     09:30-14:59  → 0.0014
+      * late         ≥ 15:00      → 0.0014   (near-expiry the FRACTION inflates
+        because the ATM premium collapses; we deliberately keep 0.0014 rather
+        than the inflated last15 fraction and let the rupee floor cover the
+        collapsed-premium case — see fill_model_params notes.last15_fraction_inflated).
+
+    The rupee floor (half_tick = tick/2 = 0.025 for a 0.05-tick option) applies
+    in every state so tiny premiums are never charged less than a half-tick.
+
+    NON-option instruments (equities, index futures) are delegated verbatim to
+    a fallback model (DefaultSlippage by default) so their behaviour is
+    unchanged.
+
+    This model is deliberately SPREAD-ONLY.  reason is accepted on exit for
+    protocol compatibility but does not change the spread cost on the default
+    (live) path: in the LIVE engine the exit fill happens at a real next-bar
+    print that already embodies any adverse move, so the model only needs the
+    spread around that print.  A stop fires intraday, so its exit naturally
+    uses the intraday state (fill_model_params notes.stop_fill_base).  No
+    stop-continuation drift is baked into the live path — see the OPTIONAL
+    research-only ``stop_drift_frac`` stress toggle (default 0.0).
+
+    ACCOUNTING NOTE: switching the 0DTE / options accounts from the old flat
+    ₹650/leg to this model makes paper P&L tick UP modestly (real spread cost
+    is only ~₹11-17/leg round-trip at premium≈60).  That is an ACCOUNTING
+    CORRECTION of an over-pessimistic fill charge, NOT alpha — it must not be
+    read as a strategy improvement.
+
+    Provenance: FG-3 measured (canonical reference reports/fg3/fg3_results.md;
+    raw params reports/fg3/fill_model_params.json; 9 sessions incl 2 expiry-Tue,
+    2026-06-22..07-01); PRELIMINARY calibration n=2 expiry-Tue; flat-650
+    replaced 2026-07-02.
+    """
+
+    #: IST time-of-day boundaries between states.
+    _ENTRY_END: time = time(9, 30)     # t < 09:30 → entry window
+    _LATE_START: time = time(15, 0)    # t ≥ 15:00 → late
+
+    #: Exit reasons treated as stop-like for the optional stress toggle.
+    _STOP_LIKE: frozenset = frozenset({ExitReason.STOP, ExitReason.TRAIL})
+
+    def __init__(
+        self,
+        fallback: SlippageModel | None = None,
+        half_spread_frac_entry: float = 0.0013,
+        half_spread_frac_intraday: float = 0.0014,
+        half_spread_frac_late: float = 0.0014,
+        half_tick: float = 0.025,
+        stop_drift_frac: float = 0.0,
+    ) -> None:
+        """Args:
+            stop_drift_frac: OPTIONAL research-only stress toggle.  When > 0,
+                an EXTRA adverse cost of ``stop_drift_frac × reference_price``
+                is added to the EXIT offset on stop-like exits (STOP/TRAIL) to
+                stress mid-continuation drift.  DEFAULT 0.0 — the live paper
+                path is pure spread and never applies drift.  Do NOT set this
+                on live accounts; it exists only for research sensitivity runs.
+        """
+        self._fallback: SlippageModel = fallback or DefaultSlippage()
+        self._hsf_entry = half_spread_frac_entry
+        self._hsf_intraday = half_spread_frac_intraday
+        self._hsf_late = half_spread_frac_late
+        self._half_tick = half_tick
+        self._stop_drift_frac = stop_drift_frac
+
+    # --- SlippageModel protocol -------------------------------------------
+
+    def entry_slippage(
+        self, instrument: Instrument, bar_history: Sequence[Bar]
+    ) -> float:
+        if not _is_option_symbol(instrument.symbol):
+            return self._fallback.entry_slippage(instrument, bar_history)
+        return self._offset(bar_history)
+
+    def exit_slippage(
+        self,
+        instrument: Instrument,
+        bar_history: Sequence[Bar],
+        reason: ExitReason,
+    ) -> float:
+        if not _is_option_symbol(instrument.symbol):
+            return self._fallback.exit_slippage(instrument, bar_history, reason)
+        return self._offset(bar_history, reason)
+
+    # --- internals --------------------------------------------------------
+
+    def _offset(
+        self, bar_history: Sequence[Bar], reason: ExitReason | None = None
+    ) -> float:
+        """Per-side option offset from the causal bar history.
+
+        Uses the last close before the fill bar as the reference premium and
+        that bar's ts_close (== the fill bar's open time, bars being
+        contiguous) as the fill time-of-day.  With no history there is no
+        reference price → return the rupee floor.
+
+        On the default path this is pure spread.  The optional research-only
+        ``stop_drift_frac`` toggle (0.0 by default) adds an extra adverse
+        ``stop_drift_frac × price`` on stop-like EXIT reasons (STOP/TRAIL).
+        """
+        if not bar_history:
+            return self._half_tick
+        last = bar_history[-1]
+        hsf = self._state_fraction(last.ts_close)
+        offset = max(hsf * last.close, self._half_tick)
+        # OPTIONAL stress toggle — never active on the live path (default 0.0).
+        if self._stop_drift_frac and reason in self._STOP_LIKE:
+            offset += self._stop_drift_frac * last.close
+        return offset
+
+    def _state_fraction(self, fill_ts) -> float:
+        """Half-spread fraction for the IST time-of-day of *fill_ts*."""
+        t = fill_ts.astimezone(IST).time()
+        if t < self._ENTRY_END:
+            return self._hsf_entry
+        if t < self._LATE_START:
+            return self._hsf_intraday
+        return self._hsf_late
+
+
+# ---------------------------------------------------------------------------
 # Session context (read-only view for strategies)
 # ---------------------------------------------------------------------------
 
