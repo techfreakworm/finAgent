@@ -1,0 +1,53 @@
+{
+ "n_boot": 10000,
+ "block": 10,
+ "seed": 20260702,
+ "configs": {
+  "spread_only": {
+   "entry_slip": 0.00128,
+   "squareoff_slip": 0.00336,
+   "stop_slip": 0.00138,
+   "fenced": {
+    "n": 218,
+    "pf_point": 1.722,
+    "pf_ci_2.5": 1.328,
+    "pf_ci_5": 1.39,
+    "pf_median": 1.718,
+    "pf_ci_95": 2.087,
+    "pf_ci_97.5": 2.161
+   },
+   "holdout": {
+    "n": 40,
+    "pf_point": 1.814,
+    "pf_ci_2.5": 0.955,
+    "pf_ci_5": 1.051,
+    "pf_median": 1.796,
+    "pf_ci_95": 3.151,
+    "pf_ci_97.5": 3.548
+   }
+  },
+  "central_stress_5pct": {
+   "entry_slip": 0.00128,
+   "squareoff_slip": 0.00336,
+   "stop_slip": 0.05138,
+   "fenced": {
+    "n": 218,
+    "pf_point": 1.387,
+    "pf_ci_2.5": 1.068,
+    "pf_ci_5": 1.12,
+    "pf_median": 1.387,
+    "pf_ci_95": 1.693,
+    "pf_ci_97.5": 1.759
+   },
+   "holdout": {
+    "n": 40,
+    "pf_point": 1.459,
+    "pf_ci_2.5": 0.766,
+    "pf_ci_5": 0.846,
+    "pf_median": 1.445,
+    "pf_ci_95": 2.532,
+    "pf_ci_97.5": 2.834
+   }
+  }
+ }
+}

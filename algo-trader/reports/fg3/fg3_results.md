@@ -59,6 +59,12 @@ STRESS parameter, not a measurement** (see Honesty ledger). 258 synthetic expiry
    (per-year PF 1.02/1.07 at the stress midpoint). The **go-forward read is the Tue-era holdout
    column (1.459 central-stress, 1.814 spread-only)** — the regime the spreads were measured in.
 
+**Sampling uncertainty (block bootstrap, 10k resamples, block 10):** spread-only fenced PF 1.722
+has CI95 [1.33, 2.16] — the measured-fill edge is unlikely to be small-sample luck. At the 5%
+stress midpoint, fenced CI95 [1.07, 1.76]: still profitable at the floor, but the ≥1.10 gate is
+not bulletproof at the 2.5th percentile under heavy stress. Holdout CIs are wide (n=40) as
+expected. (`reports/fg3/bootstrap_ci.json`)
+
 **Pre-registered decision:** real-fill PF ≥ 1.10 → **CONTINUE 1-lot** (holds across the entire
 plausible band). PF < 1.0 would have meant stop/rethink — not triggered under any observed-drift
 scenario. **PRELIMINARY:** the binding calibration rests on n=2 stop days; do NOT treat as a
