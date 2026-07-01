@@ -1,0 +1,9 @@
+[Unit]
+Description=algo-trader: log max-pain / PCR / OI-wall signals at 15:50 IST (after session close, after the chain collector)
+
+[Timer]
+OnCalendar=Mon-Fri 15:50:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

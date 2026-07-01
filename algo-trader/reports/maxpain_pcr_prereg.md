@@ -149,3 +149,10 @@ expiry-Tue and NEVER includes 06-23/06-30.** The small-gap-yet-loss observation 
   design with pre-committed interim looks + alpha-spending; the powered near-term endpoint is the
   low-variance MECHANISM, not high-variance P&L.
 - **Signal causality:** `previous_oi`, pre-open — no intraday leakage possible.
+
+---
+**ERRATUM 2026-07-02 (diagnostic field only):** the design-only PCR reference values quoted above
+(0.89 / 0.76) came from a hand-windowed strike basket; the harness's canonical OI-PCR over the full
+dte=0 basket computes 0.965 (06-23) / 0.671 (06-30). PCR is explicitly DIAGNOSTIC-only (never in the
+decision rule), so this changes nothing pre-registered; the harness values are canonical going
+forward. Primary signals (MAX-PAIN, PIN-GAP) reproduce exactly.

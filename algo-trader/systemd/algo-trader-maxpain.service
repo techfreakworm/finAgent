@@ -1,0 +1,12 @@
+[Unit]
+Description=algo-trader: log the pre-registered max-pain / PCR / OI-wall range-favorability signals + outcomes for that session. LOGS ONLY (no trade decision, read-only over data). PAPER-ONLY.
+Documentation=https://github.com/techfreakworm/finAgent
+After=network-online.target algo-trader-optionchain.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/projects/algo-trader
+Environment=TZ=Asia/Kolkata
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/ubuntu/projects/algo-trader/.venv/bin/python scripts/maxpain_pcr_log.py
