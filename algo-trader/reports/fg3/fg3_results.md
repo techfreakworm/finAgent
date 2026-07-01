@@ -47,8 +47,13 @@ STRESS parameter, not a measurement** (see Honesty ledger). 258 synthetic expiry
 2. **Overall survival is CONDITIONAL on stop-continuation cost**, which is the one thin input:
    the stop fires on 57% of fenced days, so PF is nearly a pure function of drift. Observed
    clean-book detection-lag drift on the 2 real stop days: **−1.15% / +1.61% / +5.26%** (three
-   replays: collector-ATM both days + live strike 06-23). The 0–15% band brackets these with
-   heavy pessimism; **the pre-reg gate (PF≥1.10) holds across 0–11% and breaches only at ~11.5%;
+   replays: collector-ATM both days + live strike 06-23). These estimates are
+   trigger-time/entry-premium SENSITIVE (same day 06-23 gives −1.15% at K24050 vs +5.26% at
+   K24100 purely because the barrier is first touched at different minutes) — treat them as
+   fragile points; the true drift dispersion is plausibly WIDER, which is an independent reason
+   the stress band, not any point, governs (and cuts against ~0%-drift complacency: worst
+   observed is a real +5%). The 0–15% band brackets these with heavy pessimism;
+   **the pre-reg gate (PF≥1.10) holds across 0–11% and breaches only at ~11.5%;
    breakeven ~15%** — no observed day is near either.
 3. **Regime transport disclosed:** 2026-measured spreads applied to 2021-22 are optimistic there
    (per-year PF 1.02/1.07 at the stress midpoint). The **go-forward read is the Tue-era holdout
