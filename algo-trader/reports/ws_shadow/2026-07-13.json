@@ -1,0 +1,428 @@
+{
+  "verdict": "CLEAN",
+  "verdict_ok": true,
+  "failures": [],
+  "thresholds": {
+    "count_parity_max_diff": 2,
+    "close_match_min_pct": 0.99
+  },
+  "totals": {
+    "matched_minutes": 0,
+    "close_match": 0,
+    "close_mismatch": 0,
+    "close_match_pct": 1.0,
+    "missing_in_ws": 0,
+    "missing_in_rest": 0,
+    "ts_misaligned": 0,
+    "parse_anomalies": 0
+  },
+  "phases": {
+    "OPEN": {
+      "matched": 0,
+      "close_match": 0,
+      "close_mismatch": 0,
+      "ohlc_match": 0,
+      "ts_misaligned": 0,
+      "missing_in_ws": 0,
+      "missing_in_rest": 0
+    },
+    "MID": {
+      "matched": 0,
+      "close_match": 0,
+      "close_mismatch": 0,
+      "ohlc_match": 0,
+      "ts_misaligned": 0,
+      "missing_in_ws": 0,
+      "missing_in_rest": 0
+    },
+    "CLOSE": {
+      "matched": 0,
+      "close_match": 0,
+      "close_mismatch": 0,
+      "ohlc_match": 0,
+      "ts_misaligned": 0,
+      "missing_in_ws": 0,
+      "missing_in_rest": 0
+    },
+    "OTHER": {
+      "matched": 0,
+      "close_match": 0,
+      "close_mismatch": 0,
+      "ohlc_match": 0,
+      "ts_misaligned": 0,
+      "missing_in_ws": 0,
+      "missing_in_rest": 0
+    }
+  },
+  "per_instrument": [
+    {
+      "symbol": "ADANIPORTS",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "APOLLOHOSP",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "AXISBANK",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "BAJAJ-AUTO",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "BAJAJFINSV",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "BANKNIFTY-FUT",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "BEL",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "BPCL",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "BRITANNIA",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "CIPLA",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "COALINDIA",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "DRREDDY",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "EICHERMOT",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "ETERNAL",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "GRASIM",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "HCLTECH",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "HDFCBANK",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "HDFCLIFE",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "HEROMOTOCO",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "HINDALCO",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "HINDUNILVR",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "ICICIBANK",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "INDUSINDBK",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "INFY",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "ITC",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "JSWSTEEL",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "LT",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "M&M",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "MARUTI",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "NESTLEIND",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "NIFTY-FUT",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "NTPC",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "ONGC",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "POWERGRID",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "RELIANCE",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "SBILIFE",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "SBIN",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "SHRIRAMFIN",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "TATACONSUM",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "TATASTEEL",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "TCS",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "TECHM",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "TITAN",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "TRENT",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    },
+    {
+      "symbol": "WIPRO",
+      "ws_bars": 0,
+      "rest_bars": 0,
+      "diff": 0,
+      "count_ok": true
+    }
+  ],
+  "close_mismatches": [],
+  "anomalies": {
+    "ws": [],
+    "rest": []
+  }
+}
