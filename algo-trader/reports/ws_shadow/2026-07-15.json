@@ -1,0 +1,884 @@
+{
+  "verdict": "NOT-CLEAN",
+  "verdict_ok": false,
+  "failures": [
+    "bar-count parity failed for 11 instrument(s): APOLLOHOSP ws=377 rest=374, BAJAJFINSV ws=377 rest=374, BRITANNIA ws=510 rest=374, CIPLA ws=381 rest=374, DRREDDY ws=378 rest=374",
+    "close-mismatch rate 76.9% > 1% (14958 of 19448 matched minutes)",
+    "OPEN phase close-match only 10.0% < 99%",
+    "CLOSE phase close-match only 21.7% < 99%"
+  ],
+  "thresholds": {
+    "count_parity_max_diff": 2,
+    "close_match_min_pct": 0.99
+  },
+  "totals": {
+    "matched_minutes": 19448,
+    "close_match": 4490,
+    "close_mismatch": 14958,
+    "close_match_pct": 0.230872,
+    "missing_in_ws": 0,
+    "missing_in_rest": 52,
+    "ts_misaligned": 0,
+    "parse_anomalies": 0
+  },
+  "phases": {
+    "OPEN": {
+      "matched": 780,
+      "close_match": 78,
+      "close_mismatch": 702,
+      "ohlc_match": 0,
+      "ts_misaligned": 0,
+      "missing_in_ws": 0,
+      "missing_in_rest": 0
+    },
+    "MID": {
+      "matched": 17160,
+      "close_match": 4085,
+      "close_mismatch": 13075,
+      "ohlc_match": 392,
+      "ts_misaligned": 0,
+      "missing_in_ws": 0,
+      "missing_in_rest": 0
+    },
+    "CLOSE": {
+      "matched": 1508,
+      "close_match": 327,
+      "close_mismatch": 1181,
+      "ohlc_match": 39,
+      "ts_misaligned": 0,
+      "missing_in_ws": 0,
+      "missing_in_rest": 52
+    },
+    "OTHER": {
+      "matched": 0,
+      "close_match": 0,
+      "close_mismatch": 0,
+      "ohlc_match": 0,
+      "ts_misaligned": 0,
+      "missing_in_ws": 0,
+      "missing_in_rest": 0
+    }
+  },
+  "per_instrument": [
+    {
+      "symbol": "ADANIPORTS",
+      "ws_bars": 376,
+      "rest_bars": 374,
+      "diff": 2,
+      "count_ok": true
+    },
+    {
+      "symbol": "APOLLOHOSP",
+      "ws_bars": 377,
+      "rest_bars": 374,
+      "diff": 3,
+      "count_ok": false
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "AXISBANK",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "BAJAJ-AUTO",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "BAJAJFINSV",
+      "ws_bars": 377,
+      "rest_bars": 374,
+      "diff": 3,
+      "count_ok": false
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "BANKNIFTY-FUT",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "BEL",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "BHARTIARTL",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "BPCL",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "BRITANNIA",
+      "ws_bars": 510,
+      "rest_bars": 374,
+      "diff": 136,
+      "count_ok": false
+    },
+    {
+      "symbol": "CIPLA",
+      "ws_bars": 381,
+      "rest_bars": 374,
+      "diff": 7,
+      "count_ok": false
+    },
+    {
+      "symbol": "COALINDIA",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "DRREDDY",
+      "ws_bars": 378,
+      "rest_bars": 374,
+      "diff": 4,
+      "count_ok": false
+    },
+    {
+      "symbol": "EICHERMOT",
+      "ws_bars": 384,
+      "rest_bars": 374,
+      "diff": 10,
+      "count_ok": false
+    },
+    {
+      "symbol": "ETERNAL",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "GRASIM",
+      "ws_bars": 384,
+      "rest_bars": 374,
+      "diff": 10,
+      "count_ok": false
+    },
+    {
+      "symbol": "HCLTECH",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "HDFCBANK",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "HDFCLIFE",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "HEROMOTOCO",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "HINDALCO",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "HINDUNILVR",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "ICICIBANK",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "INDUSINDBK",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "INFY",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "ITC",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "JSWSTEEL",
+      "ws_bars": 380,
+      "rest_bars": 374,
+      "diff": 6,
+      "count_ok": false
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "ws_bars": 376,
+      "rest_bars": 374,
+      "diff": 2,
+      "count_ok": true
+    },
+    {
+      "symbol": "LT",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "M&M",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "MARUTI",
+      "ws_bars": 376,
+      "rest_bars": 374,
+      "diff": 2,
+      "count_ok": true
+    },
+    {
+      "symbol": "NESTLEIND",
+      "ws_bars": 443,
+      "rest_bars": 374,
+      "diff": 69,
+      "count_ok": false
+    },
+    {
+      "symbol": "NIFTY-FUT",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "NTPC",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "ONGC",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "POWERGRID",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "RELIANCE",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "SBILIFE",
+      "ws_bars": 381,
+      "rest_bars": 374,
+      "diff": 7,
+      "count_ok": false
+    },
+    {
+      "symbol": "SBIN",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "SHRIRAMFIN",
+      "ws_bars": 376,
+      "rest_bars": 374,
+      "diff": 2,
+      "count_ok": true
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "TATACONSUM",
+      "ws_bars": 386,
+      "rest_bars": 374,
+      "diff": 12,
+      "count_ok": false
+    },
+    {
+      "symbol": "TATAMOTORS",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "TATASTEEL",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "TCS",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "TECHM",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "TITAN",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    },
+    {
+      "symbol": "TRENT",
+      "ws_bars": 376,
+      "rest_bars": 374,
+      "diff": 2,
+      "count_ok": true
+    },
+    {
+      "symbol": "ULTRACEMCO",
+      "ws_bars": 376,
+      "rest_bars": 374,
+      "diff": 2,
+      "count_ok": true
+    },
+    {
+      "symbol": "WIPRO",
+      "ws_bars": 375,
+      "rest_bars": 374,
+      "diff": 1,
+      "count_ok": true
+    }
+  ],
+  "close_mismatches": [
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:15",
+      "ws_close": 1831.5999755859375,
+      "rest_close": 1832.0,
+      "diff": -0.4,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:16",
+      "ws_close": 1834.0,
+      "rest_close": 1833.8,
+      "diff": 0.2,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:17",
+      "ws_close": 1836.5999755859375,
+      "rest_close": 1837.2,
+      "diff": -0.6,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:18",
+      "ws_close": 1835.0,
+      "rest_close": 1834.4,
+      "diff": 0.6,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:19",
+      "ws_close": 1834.0,
+      "rest_close": 1835.0,
+      "diff": -1.0,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:21",
+      "ws_close": 1830.5999755859375,
+      "rest_close": 1830.5,
+      "diff": 0.1,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:22",
+      "ws_close": 1830.0,
+      "rest_close": 1830.5,
+      "diff": -0.5,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:25",
+      "ws_close": 1828.199951171875,
+      "rest_close": 1829.0,
+      "diff": -0.8,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:26",
+      "ws_close": 1830.9000244140625,
+      "rest_close": 1832.0,
+      "diff": -1.1,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:27",
+      "ws_close": 1832.199951171875,
+      "rest_close": 1832.3,
+      "diff": -0.1,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:28",
+      "ws_close": 1833.199951171875,
+      "rest_close": 1832.0,
+      "diff": 1.2,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:29",
+      "ws_close": 1832.5,
+      "rest_close": 1832.6,
+      "diff": -0.1,
+      "tick": 0.05,
+      "phase": "OPEN"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:30",
+      "ws_close": 1833.0999755859375,
+      "rest_close": 1833.0,
+      "diff": 0.1,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:32",
+      "ws_close": 1833.699951171875,
+      "rest_close": 1834.6,
+      "diff": -0.9,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:33",
+      "ws_close": 1835.4000244140625,
+      "rest_close": 1835.2,
+      "diff": 0.2,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:34",
+      "ws_close": 1834.300048828125,
+      "rest_close": 1833.3,
+      "diff": 1.0,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:36",
+      "ws_close": 1832.800048828125,
+      "rest_close": 1833.8,
+      "diff": -1.0,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:37",
+      "ws_close": 1833.4000244140625,
+      "rest_close": 1834.2,
+      "diff": -0.8,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:38",
+      "ws_close": 1833.699951171875,
+      "rest_close": 1834.0,
+      "diff": -0.3,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:39",
+      "ws_close": 1832.5,
+      "rest_close": 1833.2,
+      "diff": -0.7,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:40",
+      "ws_close": 1832.0,
+      "rest_close": 1832.3,
+      "diff": -0.3,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:41",
+      "ws_close": 1831.800048828125,
+      "rest_close": 1831.1,
+      "diff": 0.7,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:42",
+      "ws_close": 1831.300048828125,
+      "rest_close": 1831.9,
+      "diff": -0.6,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:43",
+      "ws_close": 1832.0999755859375,
+      "rest_close": 1832.6,
+      "diff": -0.5,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:44",
+      "ws_close": 1832.800048828125,
+      "rest_close": 1833.0,
+      "diff": -0.2,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:45",
+      "ws_close": 1833.800048828125,
+      "rest_close": 1833.7,
+      "diff": 0.1,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:46",
+      "ws_close": 1832.699951171875,
+      "rest_close": 1833.1,
+      "diff": -0.4,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:47",
+      "ws_close": 1832.0,
+      "rest_close": 1832.8,
+      "diff": -0.8,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:48",
+      "ws_close": 1832.699951171875,
+      "rest_close": 1832.3,
+      "diff": 0.4,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:49",
+      "ws_close": 1832.300048828125,
+      "rest_close": 1832.0,
+      "diff": 0.3,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:50",
+      "ws_close": 1831.0999755859375,
+      "rest_close": 1831.2,
+      "diff": -0.1,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:51",
+      "ws_close": 1832.0,
+      "rest_close": 1832.2,
+      "diff": -0.2,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:52",
+      "ws_close": 1831.300048828125,
+      "rest_close": 1831.9,
+      "diff": -0.6,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:54",
+      "ws_close": 1833.0,
+      "rest_close": 1832.9,
+      "diff": 0.1,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:55",
+      "ws_close": 1832.699951171875,
+      "rest_close": 1833.1,
+      "diff": -0.4,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:57",
+      "ws_close": 1831.5999755859375,
+      "rest_close": 1831.5,
+      "diff": 0.1,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "09:58",
+      "ws_close": 1832.0,
+      "rest_close": 1832.8,
+      "diff": -0.8,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:02",
+      "ws_close": 1830.4000244140625,
+      "rest_close": 1830.2,
+      "diff": 0.2,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:05",
+      "ws_close": 1828.9000244140625,
+      "rest_close": 1829.6,
+      "diff": -0.7,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:07",
+      "ws_close": 1830.5999755859375,
+      "rest_close": 1830.4,
+      "diff": 0.2,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:08",
+      "ws_close": 1831.0999755859375,
+      "rest_close": 1831.6,
+      "diff": -0.5,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:09",
+      "ws_close": 1831.0999755859375,
+      "rest_close": 1830.7,
+      "diff": 0.4,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:10",
+      "ws_close": 1830.0,
+      "rest_close": 1829.9,
+      "diff": 0.1,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:13",
+      "ws_close": 1826.800048828125,
+      "rest_close": 1827.1,
+      "diff": -0.3,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:14",
+      "ws_close": 1826.5999755859375,
+      "rest_close": 1827.7,
+      "diff": -1.1,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:16",
+      "ws_close": 1828.300048828125,
+      "rest_close": 1828.7,
+      "diff": -0.4,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:17",
+      "ws_close": 1829.0,
+      "rest_close": 1828.5,
+      "diff": 0.5,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:18",
+      "ws_close": 1829.4000244140625,
+      "rest_close": 1829.0,
+      "diff": 0.4,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:19",
+      "ws_close": 1829.5999755859375,
+      "rest_close": 1829.5,
+      "diff": 0.1,
+      "tick": 0.05,
+      "phase": "MID"
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "minute": "10:20",
+      "ws_close": 1829.0,
+      "rest_close": 1829.1,
+      "diff": -0.1,
+      "tick": 0.05,
+      "phase": "MID"
+    }
+  ],
+  "anomalies": {
+    "ws": [],
+    "rest": []
+  }
+}
