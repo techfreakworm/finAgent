@@ -14,6 +14,12 @@ services:
       - PYTHONUNBUFFERED=1
       - TZ=Asia/Kolkata
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+        tag: "{{.Name}}"
 
   frontend:
     build:
@@ -24,3 +30,9 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+        tag: "{{.Name}}"
